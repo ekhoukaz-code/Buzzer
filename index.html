@@ -3,728 +3,1305 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BUZZER — NBA Guessing Game</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101114">
+<title>BUZZER — NBA Guessing Games</title>
+
 <style>
 :root {
-  --bg:#090b10; --panel:#141821; --panel2:#1c2230;
-  --orange:#ff8b35; --text:#f5f7fb; --muted:#929caf;
-  --green:#24b879; --yellow:#e9b949; --red:#ed626d;
-  --line:#293143;
+  --bg: #101114;
+  --panel: #191a20;
+  --panel2: #22242c;
+  --orange: #ff6b1a;
+  --orange2: #ff8c42;
+  --text: #f5f5f7;
+  --muted: #9b9da8;
+  --green: #36b878;
+  --yellow: #e6b83f;
+  --red: #ef5350;
+  --border: #30313a;
+  --radius: 18px;
 }
-*{box-sizing:border-box}
-body{
-  margin:0;background:
-  radial-gradient(ellipse at 50% -15%,#362112 0%,transparent 48%),
-  var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif;
-  min-height:100vh
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 50% -20%, #46200f 0, transparent 45%),
+    var(--bg);
+  color: var(--text);
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
 }
-button,input{font:inherit}
-button{cursor:pointer}
-button:focus-visible,input:focus-visible{outline:2px solid var(--orange);outline-offset:3px}
-button:disabled{opacity:.45;cursor:not-allowed}
-.wrap{width:min(1000px,100% - 32px);margin:auto;padding:24px 0 48px}
-.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:42px}
-.brand{font-size:26px;font-weight:1000;letter-spacing:3px}
-.brand span{color:var(--orange)}
-.pill{border:1px solid var(--line);border-radius:30px;padding:8px 12px;color:var(--muted);font-size:12px}
-.hero{text-align:center;margin:38px auto 32px;animation:rise .5s ease both}
-.eyebrow{color:var(--orange);font-size:12px;font-weight:900;letter-spacing:3px}
-h1{font-size:clamp(42px,9vw,78px);line-height:.98;letter-spacing:-3px;margin:14px 0}
-h1 em{font-style:normal;color:var(--orange)}
-.subtitle{color:var(--muted);line-height:1.6;max-width:590px;margin:12px auto}
-.menu-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:30px 0}
-.mode-card{position:relative;text-align:left;padding:25px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(145deg,#1b202b,#10131a);color:var(--text);min-height:230px;transition:transform .2s,border-color .2s,box-shadow .2s;overflow:hidden}
-.mode-card:hover{transform:translateY(-5px);border-color:var(--orange);box-shadow:0 15px 40px #0006}
-.card-icon{font-size:34px;margin-bottom:20px}
-.mode-card h2{font-size:25px;margin:0 0 10px}
-.mode-card p{color:var(--muted);line-height:1.6;margin:0 0 20px}
-.card-link{color:var(--orange);font-weight:900;font-size:13px}
-.card-number{position:absolute;right:16px;top:6px;font-size:90px;font-weight:1000;color:#ffffff06}
-.stats-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-.stat{border:1px solid var(--line);border-radius:12px;padding:12px 18px;background:#10141c;color:var(--muted);font-size:12px}
-.stat strong{display:block;color:var(--text);font-size:22px;margin-bottom:4px}
-.screen{display:none;animation:rise .3s ease both}
-.screen.active{display:block}
-.game-head{display:flex;align-items:center;gap:14px;margin-bottom:24px}
-.back{background:#171c26;color:var(--text);border:1px solid var(--line);padding:10px 13px;border-radius:10px}
-.game-head h2{margin:0;font-size:clamp(22px,5vw,32px)}
-.game-head p{margin:5px 0 0;color:var(--muted);font-size:13px}
-.panel{background:linear-gradient(150deg,#171c26,#11151d);border:1px solid var(--line);border-radius:18px;padding:clamp(16px,4vw,26px);margin-bottom:16px}
-.panel h3{margin:0 0 8px}
-.muted{color:var(--muted);line-height:1.6}
-.guess-form{display:flex;gap:10px;margin-top:18px}
-.guess-form input{flex:1;min-width:0;background:#090c12;border:1px solid #384154;border-radius:11px;padding:14px;color:white}
-.primary{background:var(--orange);border:0;color:#201207;font-weight:900;border-radius:11px;padding:13px 18px;transition:filter .2s,transform .2s}
-.primary:hover{filter:brightness(1.1);transform:translateY(-1px)}
-.secondary{background:#252c3a;color:var(--text);border:1px solid #384154;border-radius:11px;padding:12px 15px;font-weight:800}
-.message{min-height:24px;margin:14px 0 0;font-size:14px;color:var(--orange)}
-.clues{display:grid;gap:10px;margin-top:16px}
-.clue{display:flex;align-items:flex-start;gap:12px;padding:14px;background:#0d1118;border:1px solid var(--line);border-radius:12px;animation:reveal .35s ease both;line-height:1.5}
-.clue-num{flex-shrink:0;display:grid;place-items:center;width:28px;height:28px;border-radius:8px;background:#352519;color:var(--orange);font-weight:900}
-.clue p{margin:3px 0 0}
-.clue small{display:block;color:var(--muted);font-size:10px;font-weight:900;letter-spacing:1px;margin-bottom:4px}
-.guess-count{font-weight:900;color:var(--orange)}
-.table-wrap{overflow-x:auto}
-.comparison-table{width:100%;border-collapse:separate;border-spacing:5px;min-width:560px;margin-top:18px}
-.comparison-table th{color:var(--muted);font-size:10px;letter-spacing:1px;padding:9px 4px}
-.comparison-table td{text-align:center;padding:13px 8px;border-radius:8px;background:#252c39;font-weight:800;font-size:12px;min-width:75px}
-.comparison-table td:first-child{text-align:left;min-width:145px;background:#1b2230}
-.correct{background:#126c4b!important;color:#e5fff4}
-.close{background:#775b17!important;color:#fff3c2}
-.wrong{background:#303644!important;color:#c4cad6}
-.arrow{display:block;font-size:10px;margin-top:5px;opacity:.9}
-.result{display:none;text-align:center;padding:22px 12px;animation:rise .4s ease both}
-.result.show{display:block}
-.result-emoji{font-size:46px}
-.result h2{font-size:30px;margin:10px 0}
-.result p{color:var(--muted);line-height:1.6}
-.actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px}
-.footer{text-align:center;color:#697386;font-size:12px;margin-top:34px;line-height:1.7}
-.toast{color:var(--yellow);min-height:22px;margin-top:10px;font-size:13px}
-.pop{animation:pop .35s ease}
-@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-@keyframes reveal{from{opacity:0;transform:translateX(-9px)}to{opacity:1;transform:translateX(0)}}
-@keyframes pop{50%{transform:scale(1.035)}}
-@media(max-width:650px){
- .wrap{width:calc(100% - 22px);padding-top:16px}
- .topbar{margin-bottom:28px}
- .menu-grid{grid-template-columns:1fr}
- .mode-card{min-height:190px;padding:21px}
- .guess-form{flex-direction:column}
- .guess-form .primary{width:100%}
- h1{letter-spacing:-2px}
+button, input, select { font: inherit; }
+button { cursor: pointer; }
+button:focus-visible, input:focus-visible, select:focus-visible {
+  outline: 3px solid var(--orange2);
+  outline-offset: 3px;
+}
+button:disabled { opacity: .45; cursor: not-allowed; }
+button:active:not(:disabled) { transform: scale(.98); }
+header {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: rgba(16,17,20,.92);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+}
+.header-inner {
+  max-width: 1100px;
+  margin: auto;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 25px;
+  font-weight: 1000;
+  letter-spacing: 2px;
+}
+.brand-icon {
+  width: 39px;
+  height: 39px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  color: #17120e;
+  background: var(--orange);
+  box-shadow: 0 0 25px #ff6b1a35;
+}
+.brand small {
+  display: block;
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--muted);
+}
+.header-status {
+  color: var(--muted);
+  font-size: 12px;
+  text-align: right;
+}
+.status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 5px;
+  border-radius: 50%;
+  background: var(--yellow);
+}
+.status-dot.ready { background: var(--green); }
+.status-dot.error { background: var(--red); }
+main {
+  width: min(100% - 30px, 950px);
+  margin: 30px auto 60px;
+}
+.hero { text-align: center; padding: 20px 0 24px; }
+.eyebrow {
+  color: var(--orange);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+h1 {
+  margin: 8px 0;
+  font-size: clamp(40px, 8vw, 66px);
+  line-height: 1;
+  letter-spacing: -3px;
+}
+h1 span { color: var(--orange); }
+.hero p {
+  color: var(--muted);
+  max-width: 530px;
+  margin: 14px auto 0;
+  line-height: 1.6;
+}
+.panel {
+  background: linear-gradient(145deg, #1b1c22, #15161b);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px;
+  margin-bottom: 18px;
+  box-shadow: 0 15px 45px #00000017;
+}
+.mode-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.mode-card {
+  min-height: 175px;
+  text-align: left;
+  color: var(--text);
+  padding: 22px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  transition: .2s;
+}
+.mode-card:hover {
+  border-color: var(--orange);
+  transform: translateY(-3px);
+  background: #222026;
+}
+.mode-emoji { font-size: 30px; }
+.mode-card h2 { margin: 12px 0 6px; font-size: 20px; }
+.mode-card p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.section-heading h2 { margin: 0; font-size: 19px; }
+.muted { color: var(--muted); }
+.small { font-size: 12px; }
+.btn {
+  border: 0;
+  border-radius: 11px;
+  padding: 12px 16px;
+  font-weight: 850;
+  color: #17120e;
+  background: var(--orange);
+  transition: .15s;
+}
+.btn:hover { background: var(--orange2); }
+.btn.secondary {
+  color: var(--text);
+  background: var(--panel2);
+  border: 1px solid var(--border);
+}
+.btn.secondary:hover { border-color: var(--orange); }
+.btn.danger { color: white; background: #8b3030; }
+.btn.full { width: 100%; }
+.btn-row { display: flex; gap: 9px; flex-wrap: wrap; }
+input, select {
+  width: 100%;
+  min-width: 0;
+  color: var(--text);
+  background: #111216;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  padding: 13px 14px;
+}
+input::placeholder { color: #6f717c; }
+input:focus, select:focus { border-color: var(--orange); outline: none; }
+label {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 7px;
+}
+.form-row { display: flex; gap: 9px; }
+.form-row input { flex: 1; }
+.message {
+  display: none;
+  margin-top: 13px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  line-height: 1.5;
+  font-size: 13px;
+}
+.message.show { display: block; }
+.message.good { background: #143326; border-color: #285d43; }
+.message.warn { background: #332a15; border-color: #705b28; }
+.message.bad { background: #361b1b; border-color: #6b3333; }
+.clue-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.clue {
+  padding: 14px 10px;
+  background: #111216;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  text-align: center;
+}
+.clue strong { display: block; margin-top: 5px; font-size: 15px; }
+.clue span { color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: 1px; }
+.guess-list { display: grid; gap: 8px; margin-top: 15px; }
+.guess-row {
+  display: grid;
+  grid-template-columns: minmax(100px, 1.4fr) repeat(4, minmax(0, 1fr));
+  gap: 6px;
+}
+.guess-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 48px;
+  padding: 7px 4px;
+  border: 1px solid var(--border);
+  background: #111216;
+  border-radius: 8px;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.guess-cell.name { justify-content: flex-start; text-align: left; padding-left: 10px; font-weight: 800; }
+.guess-cell.correct { background: #185638; border-color: #267c4f; }
+.guess-cell.close { background: #6c5316; border-color: #9a7720; }
+.table-labels .guess-cell {
+  min-height: 34px;
+  background: transparent;
+  border: 0;
+  color: var(--muted);
+  font-size: 10px;
+  text-transform: uppercase;
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+.stat {
+  background: #111216;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  text-align: center;
+  padding: 14px 6px;
+}
+.stat strong { display: block; font-size: 25px; }
+.stat span { font-size: 10px; color: var(--muted); text-transform: uppercase; }
+.word-grid {
+  display: grid;
+  gap: 7px;
+  width: min(100%, 330px);
+  margin: 20px auto;
+}
+.word-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; }
+.letter {
+  aspect-ratio: 1;
+  border: 2px solid #383943;
+  border-radius: 7px;
+  display: grid;
+  place-items: center;
+  font-size: clamp(17px, 5vw, 23px);
+  font-weight: 900;
+  text-transform: uppercase;
+  background: #17181d;
+}
+.letter.filled { border-color: #858793; animation: pop .1s ease-out; }
+.letter.hit { background: #21804e; border-color: #21804e; }
+.letter.present { background: #a57a1c; border-color: #a57a1c; }
+.letter.miss { background: #393a43; border-color: #393a43; }
+@keyframes pop { from { transform: scale(.92); } to { transform: scale(1); } }
+.keyboard { display: grid; gap: 7px; margin: 16px auto; max-width: 510px; }
+.key-row { display: flex; justify-content: center; gap: 5px; }
+.key {
+  flex: 1;
+  max-width: 44px;
+  min-width: 0;
+  min-height: 46px;
+  border: 0;
+  border-radius: 7px;
+  background: #41434c;
+  color: white;
+  font-weight: 800;
+  padding: 5px 0;
+}
+.key.wide { max-width: 75px; font-size: 11px; }
+.key.hit { background: #21804e; }
+.key.present { background: #a57a1c; }
+.key.miss { background: #292a31; color: #858793; }
+.hidden { display: none !important; }
+.divider { height: 1px; background: var(--border); margin: 18px 0; }
+footer { color: #777985; text-align: center; font-size: 12px; line-height: 1.7; padding: 15px 0 30px; }
+dialog {
+  max-width: min(500px, calc(100% - 25px));
+  color: var(--text);
+  background: #191a20;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 24px;
+}
+dialog::backdrop { background: #000b; backdrop-filter: blur(4px); }
+dialog h2 { margin-top: 0; }
+dialog p, dialog li { color: #c1c2ca; line-height: 1.65; }
+@media (max-width: 600px) {
+  main { width: min(100% - 20px, 950px); margin-top: 18px; }
+  .header-inner { padding: 12px; }
+  .brand { font-size: 21px; }
+  .panel { padding: 15px; }
+  .mode-grid { grid-template-columns: 1fr; }
+  .mode-card { min-height: 140px; }
+  .clue-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .guess-row { grid-template-columns: minmax(78px, 1.2fr) repeat(4, minmax(0, 1fr)); gap: 3px; }
+  .guess-cell { font-size: 10px; padding: 5px 2px; min-height: 43px; }
+  .guess-cell.name { padding-left: 5px; }
+  .table-labels .guess-cell { font-size: 8px; }
+  .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .form-row { flex-direction: column; }
+  .key { min-height: 42px; font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
 </style>
 </head>
+
 <body>
-<div class="wrap">
-  <header class="topbar">
-    <div class="brand">🏀 BUZZ<span>ER</span></div>
-    <div class="pill">NBA GUESSING CHALLENGE</div>
-  </header>
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-icon">🏀</div>
+      <div>BUZZER<small>THE NBA GUESSING GAME</small></div>
+    </div>
+    <div class="header-status">
+      <span id="statusDot" class="status-dot"></span>
+      <span id="statusText">Loading roster…</span>
+    </div>
+  </div>
+</header>
 
-  <section id="menu" class="screen active">
+<main>
+  <section id="homeScreen">
     <div class="hero">
-      <div class="eyebrow">READ THE GAME</div>
-      <h1>KNOW YOUR<br><em>HOOPS?</em></h1>
-      <p class="subtitle">Two modes. Six guesses. A whole lot of basketball knowledge. Step onto the court.</p>
+      <div class="eyebrow">Your court. Your call.</div>
+      <h1>BUZ<span>ZER.</span></h1>
+      <p>Test your NBA knowledge. Identify the player, crack the word, and build your streak.</p>
     </div>
 
-    <div class="menu-grid">
-      <button class="mode-card" onclick="startGame('mystery')">
-        <div class="card-number">01</div>
-        <div class="card-icon">🕵️</div>
+    <div class="mode-grid">
+      <button class="mode-card" onclick="openPlayerGame()">
+        <div class="mode-emoji">🕵️</div>
         <h2>Guess the Player</h2>
-        <p>Decode mysterious clues. Every wrong guess reveals a more helpful hint. Save your best guess for the buzzer.</p>
-        <span class="card-link">ENTER MYSTERY MODE →</span>
+        <p>Use clues and compare players until you identify the mystery NBA player.</p>
       </button>
-      <button class="mode-card" onclick="startGame('wordle')">
-        <div class="card-number">02</div>
-        <div class="card-icon">🟩</div>
+      <button class="mode-card" onclick="openWordGame()">
+        <div class="mode-emoji">🔤</div>
         <h2>NBA Wordle</h2>
-        <p>Guess a player, then compare their team, division, age, height, jersey number and position.</p>
-        <span class="card-link">ENTER COMPARISON MODE →</span>
+        <p>Guess a five-letter basketball word in six tries. A new puzzle every day.</p>
       </button>
     </div>
 
-    <div class="stats-row">
-      <div class="stat"><strong id="menuPlayed">0</strong>ROUNDS PLAYED</div>
-      <div class="stat"><strong id="menuWins">0</strong>ROUNDS WON</div>
-      <div class="stat"><strong id="menuStreak">0</strong>CURRENT STREAK</div>
-    </div>
-    <p class="footer">BUZZER is a fan-made basketball game and is not affiliated with the NBA.<br>Player information is a starter dataset and may not reflect current rosters.</p>
+    <section class="panel" style="margin-top:18px">
+      <div class="section-heading">
+        <h2>📊 Your career stats</h2>
+        <button class="btn secondary" onclick="showHelp()">How to play</button>
+      </div>
+      <div class="stats-grid">
+        <div class="stat"><strong id="statPlayed">0</strong><span>Played</span></div>
+        <div class="stat"><strong id="statWins">0</strong><span>Wins</span></div>
+        <div class="stat"><strong id="statRate">0%</strong><span>Win rate</span></div>
+        <div class="stat"><strong id="statStreak">0</strong><span>Streak</span></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="section-heading">
+        <h2>🔥 Daily challenge</h2>
+        <span class="eyebrow">Every day</span>
+      </div>
+      <p class="muted" style="line-height:1.6;margin-bottom:0">
+        Play both modes and see how well you know the league. Your progress is saved in this browser.
+      </p>
+    </section>
   </section>
 
-  <section id="game" class="screen">
-    <div class="game-head">
-      <button class="back" onclick="goMenu()">← Menu</button>
+  <section id="playerScreen" class="hidden">
+    <div class="section-heading">
       <div>
-        <h2 id="gameTitle">Game mode</h2>
-        <p id="gameSubtitle">Six guesses to find the player.</p>
+        <div class="eyebrow">Game mode 01</div>
+        <h2 style="font-size:28px;margin:6px 0">Guess the Player</h2>
       </div>
+      <button class="btn secondary" onclick="goHome()">← Menu</button>
     </div>
 
     <div class="panel">
-      <div style="display:flex;justify-content:space-between;gap:12px;align-items:center">
-        <h3 id="challengeTitle">Your challenge</h3>
-        <span class="pill"><span id="guessCount" class="guess-count">0</span> / 6</span>
+      <div class="section-heading">
+        <div>
+          <strong>Mystery player</strong>
+          <div class="muted small" id="playerRoundText">Daily challenge</div>
+        </div>
+        <span class="eyebrow" id="attemptCounter">0 guesses</span>
       </div>
-      <p id="gameInstruction" class="muted">Enter a player's full name.</p>
-      <form id="guessForm" class="guess-form">
-        <input id="guessInput" list="playerList" placeholder="Type a player's name..." autocomplete="off" required>
-        <datalist id="playerList"></datalist>
-        <button class="primary" type="submit">LOCK IN GUESS ↗</button>
+
+      <div class="clue-grid">
+        <div class="clue"><span>Conference</span><strong id="clueConference">???</strong></div>
+        <div class="clue"><span>Position</span><strong id="cluePosition">???</strong></div>
+        <div class="clue"><span>Height</span><strong id="clueHeight">???</strong></div>
+        <div class="clue"><span>Age</span><strong id="clueAge">???</strong></div>
+        <div class="clue"><span>Team</span><strong id="clueTeam">???</strong></div>
+        <div class="clue"><span>Jersey</span><strong id="clueJersey">???</strong></div>
+      </div>
+      <p class="muted small" style="margin-bottom:0">Use hints to reveal more information. A green cell is a match; a yellow cell is close.</p>
+    </div>
+
+    <div class="panel">
+      <label for="playerInput">Enter an NBA player</label>
+      <form id="playerForm" class="form-row">
+        <input id="playerInput" list="playerOptions" placeholder="e.g. Stephen Curry" autocomplete="off" required>
+        <datalist id="playerOptions"></datalist>
+        <button class="btn" type="submit" id="guessButton">Guess</button>
       </form>
-      <div id="message" class="message" role="status"></div>
-      <div id="comparisonArea"></div>
-    </div>
-
-    <div id="cluePanel" class="panel">
-      <h3>🔎 Mystery clues</h3>
-      <p class="muted">The clues get easier as you use more guesses.</p>
-      <div id="clues" class="clues"></div>
-    </div>
-
-    <div id="result" class="result panel">
-      <div id="resultEmoji" class="result-emoji">🏆</div>
-      <h2 id="resultTitle">BUZZER!</h2>
-      <p id="resultText"></p>
-      <div class="actions">
-        <button class="primary" onclick="playAgain()">PLAY ANOTHER ROUND ↻</button>
-        <button class="secondary" onclick="goMenu()">MAIN MENU</button>
+      <div class="btn-row" style="margin-top:12px">
+        <button class="btn secondary" id="hintButton" onclick="revealHint()">💡 Reveal a hint</button>
+        <button class="btn secondary" onclick="revealAnswer()">Reveal answer</button>
+        <button class="btn secondary" onclick="resetPlayerGame()">New game</button>
       </div>
+      <div id="playerMessage" class="message"></div>
+    </div>
+
+    <div class="panel">
+      <div class="section-heading">
+        <h2>Your guesses</h2>
+        <span class="muted small">Closest match wins</span>
+      </div>
+      <div class="guess-row table-labels">
+        <div class="guess-cell">Player</div>
+        <div class="guess-cell">Team</div>
+        <div class="guess-cell">Position</div>
+        <div class="guess-cell">Height</div>
+        <div class="guess-cell">Age</div>
+      </div>
+      <div id="guessList" class="guess-list"></div>
+      <p id="emptyGuesses" class="muted small">Your guesses will appear here.</p>
     </div>
   </section>
-</div>
+
+  <section id="wordScreen" class="hidden">
+    <div class="section-heading">
+      <div>
+        <div class="eyebrow">Game mode 02</div>
+        <h2 style="font-size:28px;margin:6px 0">NBA Wordle</h2>
+      </div>
+      <button class="btn secondary" onclick="goHome()">← Menu</button>
+    </div>
+    <div class="panel">
+      <div class="section-heading">
+        <div>
+          <strong>Crack the word</strong>
+          <div class="muted small">Six tries · Five letters</div>
+        </div>
+        <button class="btn secondary" onclick="showHelp()">Rules</button>
+      </div>
+      <div id="wordGrid" class="word-grid" aria-label="Word puzzle"></div>
+      <div id="keyboard" class="keyboard"></div>
+      <div id="wordMessage" class="message"></div>
+      <div class="btn-row" style="justify-content:center;margin-top:12px">
+        <button class="btn secondary" onclick="resetWordGame()">Restart today's puzzle</button>
+        <button class="btn secondary" onclick="shareResult()">Share result</button>
+      </div>
+      <p class="muted small" style="text-align:center;margin-bottom:0">Green = correct spot · Yellow = in the word · Grey = not in the word</p>
+    </div>
+  </section>
+
+  <footer>
+    BUZZER is a fan-made guessing game and is not affiliated with the NBA.<br>
+    Player data depends on the external community roster source.
+  </footer>
+</main>
+
+<dialog id="helpDialog">
+  <h2>🏀 How to play</h2>
+  <p><strong>Guess the Player:</strong> Pick a player from the roster. Compare their team, position, height, and age with the mystery player. Use hints if you get stuck.</p>
+  <p><strong>NBA Wordle:</strong> Guess the five-letter basketball word in six tries. Green letters are in the right place, yellow letters belong somewhere else, and grey letters are not in the word.</p>
+  <p><strong>Your stats:</strong> Your stats and daily progress are stored in this browser. Clearing browser data can erase them.</p>
+  <p><strong>Roster note:</strong> The game loads data from a community-maintained roster. It may not match every current NBA signing or roster move.</p>
+  <button class="btn full" onclick="document.getElementById('helpDialog').close()">Got it</button>
+</dialog>
 
 <script>
-/*
-  STARTER PLAYER DATA
-  Heights are in inches. Divisions use the standard NBA division names.
-  Update/verify roster details before treating this as a current full roster.
-*/
-const players = [
- {name:"LeBron James",team:"Lakers",division:"Pacific",age:41,height:81,number:23,position:"Forward",clues:[
- "His career began before several current stars entered elementary school.",
- "He has won championships with more than one franchise.",
- "He was drafted first overall in 2003.",
- "He spent a memorable stretch of his career in Miami.",
- "He is often called the King.",
- "His first name is LeBron and his last name is James."
- ]},
- {name:"Stephen Curry",team:"Warriors",division:"Pacific",age:38,height:74,number:30,position:"Guard",clues:[
- "His influence changed how teams value long-range shooting.",
- "He comes from a family with professional basketball connections.",
- "His team plays home games in the San Francisco Bay Area.",
- "He has won multiple NBA championships.",
- "His jersey number is 30.",
- "His name is Stephen Curry."
- ]},
- {name:"Kevin Durant",team:"Rockets",division:"Southwest",age:37,height:83,number:7,position:"Forward",clues:[
- "He has played for several championship-contending teams.",
- "He was a college star at Texas.",
- "He has Olympic gold medals with Team USA.",
- "His initials are K.D.",
- "He is an exceptionally tall scoring forward.",
- "His name is Kevin Durant."
- ]},
- {name:"Giannis Antetokounmpo",team:"Bucks",division:"Central",age:31,height:83,number:34,position:"Forward",clues:[
- "His path to the NBA began far from the United States.",
- "He became a champion with the franchise that drafted him.",
- "His nickname references his Greek roots.",
- "He won the NBA championship in 2021.",
- "He is called the Greek Freak.",
- "His name is Giannis Antetokounmpo."
- ]},
- {name:"Nikola Jokic",team:"Nuggets",division:"Northwest",age:31,height:83,number:15,position:"Center",clues:[
- "He has helped redefine what a team's offense can run through.",
- "He came to the NBA from Serbia.",
- "His passing is a major part of his game.",
- "He won an NBA championship with Denver.",
- "He is a multiple-time MVP.",
- "His name is Nikola Jokic."
- ]},
- {name:"Jayson Tatum",team:"Celtics",division:"Atlantic",age:28,height:80,number:0,position:"Forward",clues:[
- "He entered the league as a highly touted prospect from Duke.",
- "He plays for one of the league's most decorated franchises.",
- "His team won the 2024 NBA championship.",
- "He wears number zero.",
- "His first name starts with J and surname starts with T.",
- "His name is Jayson Tatum."
- ]},
- {name:"Luka Doncic",team:"Lakers",division:"Pacific",age:27,height:79,number:77,position:"Guard",clues:[
- "He was already an accomplished professional before entering the NBA.",
- "He was born in Slovenia.",
- "He previously starred for Dallas.",
- "His jersey number uses two identical digits.",
- "He is a highly creative guard known for passing and scoring.",
- "His name is Luka Doncic."
- ]},
- {name:"Anthony Edwards",team:"Timberwolves",division:"Northwest",age:25,height:76,number:5,position:"Guard",clues:[
- "He was selected first overall in the 2020 NBA Draft.",
- "He played college basketball at Georgia.",
- "His nickname is Ant-Man.",
- "He plays for Minnesota.",
- "He is known for explosive athletic plays.",
- "His name is Anthony Edwards."
- ]},
- {name:"Shai Gilgeous-Alexander",team:"Thunder",division:"Northwest",age:28,height:78,number:2,position:"Guard",clues:[
- "He took a major step forward after joining Oklahoma City.",
- "He was born in Canada.",
- "His initials are S.G.A.",
- "He won the 2025 NBA MVP award.",
- "His surname contains a hyphen.",
- "His name is Shai Gilgeous-Alexander."
- ]},
- {name:"Victor Wembanyama",team:"Spurs",division:"Southwest",age:22,height:88,number:1,position:"Center",clues:[
- "Before the NBA, he attracted worldwide attention as a prospect.",
- "He was born in France.",
- "He plays for San Antonio.",
- "He is famous for his unusual combination of height and skill.",
- "His surname begins with W.",
- "His name is Victor Wembanyama."
- ]},
- {name:"Joel Embiid",team:"76ers",division:"Atlantic",age:32,height:84,number:21,position:"Center",clues:[
- "His basketball journey started in Cameroon.",
- "He became a major star in Philadelphia.",
- "He has won the NBA's regular-season MVP award.",
- "He wears number 21.",
- "He is a dominant center.",
- "His name is Joel Embiid."
- ]},
- {name:"Donovan Mitchell",team:"Cavaliers",division:"Central",age:30,height:75,number:45,position:"Guard",clues:[
- "He played college basketball at Louisville.",
- "He was drafted by Denver before being traded.",
- "He became a star in Utah before moving to Cleveland.",
- "His nickname is Spida.",
- "He wears number 45.",
- "His name is Donovan Mitchell."
- ]},
- {name:"Devin Booker",team:"Suns",division:"Pacific",age:30,height:77,number:1,position:"Guard",clues:[
- "He played college basketball at Kentucky.",
- "He scored 70 points in an NBA game early in his career.",
- "He has spent his NBA career with Phoenix.",
- "He is a high-level shooting guard.",
- "He wears number 1.",
- "His name is Devin Booker."
- ]},
- {name:"Jaylen Brown",team:"Celtics",division:"Atlantic",age:30,height:78,number:7,position:"Forward",clues:[
- "He played college basketball at California.",
- "He has formed a long-running star partnership in Boston.",
- "His team won the 2024 NBA championship.",
- "He wears number 7.",
- "His first name starts with Jay.",
- "His name is Jaylen Brown."
- ]},
- {name:"Damian Lillard",team:"Trail Blazers",division:"Northwest",age:36,height:74,number:0,position:"Guard",clues:[
- "His college career took place at Weber State.",
- "His nickname references his initials.",
- "He has been known for clutch long-range shots.",
- "He is strongly associated with Portland.",
- "His nickname is Dame Time.",
- "His name is Damian Lillard."
- ]},
- {name:"Kawhi Leonard",team:"Clippers",division:"Pacific",age:35,height:79,number:2,position:"Forward",clues:[
- "He won championships with two different franchises.",
- "He was named Finals MVP more than once.",
- "He played for San Antonio and Toronto before Los Angeles.",
- "He is known for an unusually calm public persona.",
- "His nickname is The Klaw.",
- "His name is Kawhi Leonard."
- ]},
- {name:"Jimmy Butler",team:"Warriors",division:"Pacific",age:37,height:79,number:10,position:"Forward",clues:[
- "He developed into a star after being selected late in the first round.",
- "He has played for several Eastern Conference teams.",
- "He led Miami on deep postseason runs.",
- "He is known for a highly competitive playoff style.",
- "His first name is Jimmy.",
- "His name is Jimmy Butler."
- ]},
- {name:"Trae Young",team:"Hawks",division:"Southeast",age:27,height:73,number:3,position:"Guard",clues:[
- "He played college basketball at Oklahoma.",
- "He is known for deep shooting range and passing.",
- "He plays for Atlanta.",
- "He wears number 3.",
- "His first name rhymes with 'day'.",
- "His name is Trae Young."
- ]},
- {name:"Paolo Banchero",team:"Magic",division:"Southeast",age:23,height:82,number:5,position:"Forward",clues:[
- "He played college basketball at Duke.",
- "He was selected first overall in 2022.",
- "He plays for Orlando.",
- "He is a forward who can create offense with the ball.",
- "His surname starts with B.",
- "His name is Paolo Banchero."
- ]},
- {name:"Ja Morant",team:"Grizzlies",division:"Southwest",age:27,height:75,number:12,position:"Guard",clues:[
- "He played college basketball at Murray State.",
- "He is known for explosive drives to the basket.",
- "He plays for Memphis.",
- "His jersey number is 12.",
- "His first name is short and his surname is Morant.",
- "His name is Ja Morant."
- ]},
- {name:"Bam Adebayo",team:"Heat",division:"Southeast",age:29,height:81,number:13,position:"Center",clues:[
- "He played college basketball at Kentucky.",
- "He is known for defensive versatility.",
- "He plays for Miami.",
- "His first name is a nickname.",
- "He wears number 13.",
- "His name is Bam Adebayo."
- ]},
- {name:"Tyrese Haliburton",team:"Pacers",division:"Central",age:26,height:77,number:0,position:"Guard",clues:[
- "He played college basketball at Iowa State.",
- "He is known for his passing and decision-making.",
- "He helped Indiana reach the NBA Finals in 2025.",
- "He wears number zero.",
- "His surname begins with H.",
- "His name is Tyrese Haliburton."
- ]},
- {name:"Karl-Anthony Towns",team:"Knicks",division:"Atlantic",age:30,height:84,number:32,position:"Center",clues:[
- "He played college basketball at Kentucky.",
- "He spent many years in Minnesota before a major trade.",
- "He later joined the New York Knicks.",
- "He is a center with strong outside shooting.",
- "His surname is Towns.",
- "His name is Karl-Anthony Towns."
- ]},
- {name:"LaMelo Ball",team:"Hornets",division:"Southeast",age:25,height:79,number:1,position:"Guard",clues:[
- "He played professionally overseas before the NBA.",
- "He was selected third overall in the 2020 draft.",
- "He plays for Charlotte.",
- "His surname is shared by basketball-playing family members.",
- "He wears number 1.",
- "His name is LaMelo Ball."
- ]},
- {name:"Cade Cunningham",team:"Pistons",division:"Central",age:25,height:78,number:2,position:"Guard",clues:[
- "He played college basketball at Oklahoma State.",
- "He was selected first overall in the 2021 draft.",
- "He plays for Detroit.",
- "He is a tall playmaking guard.",
- "His surname starts with C.",
- "His name is Cade Cunningham."
- ]},
- {name:"Zion Williamson",team:"Pelicans",division:"Southwest",age:26,height:78,number:1,position:"Forward",clues:[
- "He became a national sensation while playing at Duke.",
- "He was the first pick in the 2019 NBA Draft.",
- "He plays for New Orleans.",
- "He is known for power and explosive athleticism.",
- "His first name is Zion.",
- "His name is Zion Williamson."
- ]},
- {name:"Brandon Ingram",team:"Raptors",division:"Atlantic",age:29,height:80,number:3,position:"Forward",clues:[
- "He was drafted second overall in 2016.",
- "He played for the Lakers and Pelicans during his career.",
- "He is a tall wing known for his scoring.",
- "His surname begins with I.",
- "His first name is Brandon.",
- "His name is Brandon Ingram."
- ]},
- {name:"Jalen Brunson",team:"Knicks",division:"Atlantic",age:30,height:74,number:11,position:"Guard",clues:[
- "He played college basketball at Villanova.",
- "He won two college national championships.",
- "He became a star in New York after playing for Dallas.",
- "He wears number 11.",
- "His surname begins with B.",
- "His name is Jalen Brunson."
- ]},
- {name:"De'Aaron Fox",team:"Spurs",division:"Southwest",age:28,height:75,number:4,position:"Guard",clues:[
- "He played college basketball at Kentucky.",
- "He became a star in Sacramento.",
- "He is known for speed in transition.",
- "His surname is also the name of an animal.",
- "He wears number 4.",
- "His name is De'Aaron Fox."
- ]},
- {name:"Alperen Sengun",team:"Rockets",division:"Southwest",age:24,height:81,number:28,position:"Center",clues:[
- "He came to the NBA from Turkey.",
- "His footwork and passing have drawn comparisons to skilled big men.",
- "He plays for Houston.",
- "He is a center who helps create offense.",
- "His surname begins with S.",
- "His name is Alperen Sengun."
- ]},
- {name:"Darius Garland",team:"Cavaliers",division:"Central",age:26,height:73,number:10,position:"Guard",clues:[
- "He played college basketball at Vanderbilt.",
- "He was selected fifth overall in 2019.",
- "He has been a key guard for Cleveland.",
- "He wears number 10.",
- "His surname begins with G.",
- "His name is Darius Garland."
- ]},
- {name:"Evan Mobley",team:"Cavaliers",division:"Central",age:25,height:83,number:4,position:"Forward",clues:[
- "He played college basketball at USC.",
- "He was selected third overall in 2021.",
- "He is known for defense and rim protection.",
- "He plays in Cleveland.",
- "His surname is Mobley.",
- "His name is Evan Mobley."
- ]},
- {name:"Scottie Barnes",team:"Raptors",division:"Atlantic",age:25,height:79,number:4,position:"Forward",clues:[
- "He played college basketball at Florida State.",
- "He was selected fourth overall in 2021.",
- "He plays for Toronto.",
- "He won Rookie of the Year in 2022.",
- "His first name is Scottie.",
- "His name is Scottie Barnes."
- ]},
- {name:"Jamal Murray",team:"Nuggets",division:"Northwest",age:29,height:76,number:27,position:"Guard",clues:[
- "He was born in Canada.",
- "He has a strong postseason reputation alongside a star center.",
- "He helped Denver win the 2023 NBA championship.",
- "He wears number 27.",
- "His surname is Murray.",
- "His name is Jamal Murray."
- ]},
- {name:"Chet Holmgren",team:"Thunder",division:"Northwest",age:24,height:85,number:7,position:"Center",clues:[
- "He played college basketball at Gonzaga.",
- "He was selected second overall in 2022.",
- "He plays for Oklahoma City.",
- "He is a very tall modern big man with shooting ability.",
- "His surname starts with H.",
- "His name is Chet Holmgren."
- ]},
- {name:"Jalen Williams",team:"Thunder",division:"Northwest",age:25,height:78,number:8,position:"Forward",clues:[
- "He played college basketball at Santa Clara.",
- "He was selected 12th overall in 2022.",
- "He plays for Oklahoma City.",
- "His nickname is often shortened to J-Dub.",
- "His jersey number is 8.",
- "His name is Jalen Williams."
- ]},
- {name:"Franz Wagner",team:"Magic",division:"Southeast",age:25,height:82,number:22,position:"Forward",clues:[
- "He was born in Germany.",
- "He played college basketball at Michigan.",
- "He plays for Orlando alongside another young star.",
- "His surname is Wagner.",
- "He wears number 22.",
- "His name is Franz Wagner."
- ]},
- {name:"Desmond Bane",team:"Magic",division:"Southeast",age:28,height:77,number:3,position:"Guard",clues:[
- "He played college basketball at TCU.",
- "He spent the start of his career in Memphis.",
- "He is known for his shooting.",
- "He wears number 3.",
- "His surname is Bane.",
- "His name is Desmond Bane."
- ]},
- {name:"Derrick White",team:"Celtics",division:"Atlantic",age:32,height:76,number:9,position:"Guard",clues:[
- "He played college basketball at Colorado.",
- "He became an important two-way player in Boston.",
- "He helped the Celtics win the 2024 title.",
- "He is known for defensive plays and timely shooting.",
- "His surname is White.",
- "His name is Derrick White."
- ]},
- {name:"Mikal Bridges",team:"Knicks",division:"Atlantic",age:30,height:78,number:25,position:"Forward",clues:[
- "He played college basketball at Villanova.",
- "He was part of a college championship team.",
- "He has played for Phoenix, Brooklyn and New York.",
- "He is known for durability and perimeter defense.",
- "His surname is Bridges.",
- "His name is Mikal Bridges."
- ]},
- {name:"Kristaps Porzingis",team:"Warriors",division:"Pacific",age:31,height:87,number:7,position:"Center",clues:[
- "He was born in Latvia.",
- "He was selected fourth overall in 2015.",
- "He has played for several Eastern Conference teams.",
- "His nickname is the Unicorn.",
- "He is a very tall floor-spacing big man.",
- "His name is Kristaps Porzingis."
- ]}
+"use strict";
+
+/* ---------------------------
+   CONFIGURATION
+---------------------------- */
+
+const ROSTER_URL =
+  "https://raw.githubusercontent.com/A-V29/NBA.Rosters/refs/heads/main/2026-27.NBA.Roster.json";
+
+const WORDS = [
+  "dunks", "court", "coach", "shots", "shoot",
+  "guard", "score", "hoops", "steal", "block",
+  "pivot", "drive", "swish", "teams", "clutch",
+  "press", "plays", "bench", "draft", "camps"
 ];
 
-const divisions = {
- "Hawks":"Southeast","Celtics":"Atlantic","Nets":"Atlantic",
- "Hornets":"Southeast","Bulls":"Central","Cavaliers":"Central",
- "Mavericks":"Southwest","Nuggets":"Northwest","Pistons":"Central",
- "Warriors":"Pacific","Rockets":"Southwest","Pacers":"Central",
- "Clippers":"Pacific","Lakers":"Pacific","Grizzlies":"Southwest",
- "Heat":"Southeast","Bucks":"Central","Timberwolves":"Northwest",
- "Pelicans":"Southwest","Knicks":"Atlantic","Thunder":"Northwest",
- "Magic":"Southeast","76ers":"Atlantic","Suns":"Pacific",
- "Trail Blazers":"Northwest","Kings":"Pacific","Spurs":"Southwest",
- "Raptors":"Atlantic","Jazz":"Northwest","Wizards":"Southeast"
-};
+const MAX_PLAYER_GUESSES = 8;
+const MAX_WORD_GUESSES = 6;
+const PLAYER_DAILY_KEY = "buzzer_player_daily_v2";
+const WORD_DAILY_KEY = "buzzer_word_daily_v2";
+const STATS_KEY = "buzzer_stats_v2";
 
-const $ = id => document.getElementById(id);
-let mode = "mystery", answer = null, guesses = [], ended = false;
-let clueCount = 1, previousAnswer = "";
-let played = 0, wins = 0, streak = 0;
+let players = [];
+let teamsById = {};
+let mysteryPlayer = null;
+let playerGuesses = [];
+let playerFinished = false;
+let hintsUsed = 0;
 
-function safeText(value) {
-  return String(value).replace(/[&<>"']/g, c => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-  })[c]);
+let targetWord = "";
+let wordGuesses = [];
+let currentWord = "";
+let wordFinished = false;
+let wordKeyboardStatus = {};
+let lastShareText = "";
+
+/* ---------------------------
+   GENERAL HELPERS
+---------------------------- */
+
+function $(id) {
+  return document.getElementById(id);
 }
 
-function randomPlayer() {
-  let pool = players.filter(p => p.name !== previousAnswer);
-  if (!pool.length) pool = players;
-  const p = pool[Math.floor(Math.random()*pool.length)];
-  previousAnswer = p.name;
-  return p;
+function todayKey() {
+  return new Date().toISOString().slice(0, 10);
 }
 
-function startGame(selectedMode) {
-  mode = selectedMode;
-  $("menu").classList.remove("active");
-  $("game").classList.add("active");
-  $("gameTitle").textContent = mode === "mystery" ? "Guess the Player" : "NBA Wordle";
-  $("gameSubtitle").textContent = mode === "mystery"
-    ? "Six guesses. Clues get easier as you go."
-    : "Compare six player attributes to find the mystery player.";
-  $("challengeTitle").textContent = mode === "mystery" ? "Mystery player" : "Find today's player";
-  $("gameInstruction").textContent = mode === "mystery"
-    ? "A tricky clue starts the round. Each miss reveals another."
-    : "Green means correct, yellow means close, grey means incorrect.";
-  $("cluePanel").style.display = mode === "mystery" ? "block" : "none";
-  $("comparisonArea").innerHTML = "";
-  $("result").classList.remove("show");
-  $("guessForm").style.display = "flex";
-  $("guessInput").disabled = false;
-  $("guessInput").value = "";
-  $("message").textContent = "";
-  $("guessCount").textContent = "0";
-  guesses = [];
-  ended = false;
-  clueCount = 1;
-  answer = randomPlayer();
+function seededNumber(text) {
+  let h = 2166136261;
+  for (let i = 0; i < text.length; i++) {
+    h ^= text.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
+function dailyPick(list, key) {
+  if (!list.length) return null;
+  return list[seededNumber(key) % list.length];
+}
+
+function safeRead(key, fallback) {
+  try {
+    const value = localStorage.getItem(key);
+    return value ? JSON.parse(value) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function safeWrite(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (error) {
+    console.warn("Could not save game progress:", error);
+  }
+}
+
+function showMessage(id, text, type = "") {
+  const el = $(id);
+  el.textContent = text;
+  el.className = "message show " + type;
+}
+
+function hideMessage(id) {
+  $(id).className = "message";
+  $(id).textContent = "";
+}
+
+function setStatus(text, type = "") {
+  $("statusText").textContent = text;
+  $("statusDot").className = "status-dot " + type;
+}
+
+function showHelp() {
+  $("helpDialog").showModal();
+}
+
+function goHome() {
+  $("homeScreen").classList.remove("hidden");
+  $("playerScreen").classList.add("hidden");
+  $("wordScreen").classList.add("hidden");
+  updateStatsUI();
+}
+
+function openPlayerGame() {
+  $("homeScreen").classList.add("hidden");
+  $("wordScreen").classList.add("hidden");
+  $("playerScreen").classList.remove("hidden");
+
+  if (!players.length) {
+    showMessage("playerMessage",
+      "The roster hasn't loaded yet. Check your connection and try again.",
+      "warn");
+    return;
+  }
+
+  startPlayerGame();
+}
+
+function openWordGame() {
+  $("homeScreen").classList.add("hidden");
+  $("playerScreen").classList.add("hidden");
+  $("wordScreen").classList.remove("hidden");
+  startWordGame();
+}
+
+/* ---------------------------
+   ROSTER LOADING
+---------------------------- */
+
+function normalizePosition(position) {
+  const p = String(position || "").toUpperCase().trim();
+  if (!p) return "Unknown";
+
+  const map = {
+    PG: "Guard", SG: "Guard", G: "Guard",
+    SF: "Forward", PF: "Forward", F: "Forward",
+    C: "Center",
+    GF: "Guard/Forward", FG: "Guard/Forward",
+    FC: "Forward/Center", CF: "Forward/Center",
+    GFC: "Guard/Forward/Center"
+  };
+
+  return map[p] || p;
+}
+
+function heightLabel(inches) {
+  const n = Number(inches);
+  if (!Number.isFinite(n) || n <= 0) return "Unknown";
+  return Math.floor(n / 12) + "'" + (n % 12) + '"';
+}
+
+function conferenceForTeam(team) {
+  if (!team) return "Unknown";
+  const conf = Number(team.cid);
+  if (conf === 0) return "East";
+  if (conf === 1) return "West";
+  return "Unknown";
+}
+
+function cleanPlayer(p) {
+  if (!p || !p.name || !Number.isInteger(Number(p.tid))) return null;
+
+  const tid = Number(p.tid);
+  if (tid < 0 || tid > 29) return null;
+
+  const team = teamsById[tid];
+  if (!team) return null;
+
+  const name = String(p.name).trim();
+  if (!name) return null;
+
+  const bornYear = Number(p.born && p.born.year);
+  const age = Number.isFinite(bornYear) && bornYear > 1900
+    ? new Date().getFullYear() - bornYear
+    : null;
+
+  const jerseyRaw = p.jerseyNumber;
+  const jersey = jerseyRaw == null || jerseyRaw === ""
+    ? "?"
+    : String(jerseyRaw);
+
+  return {
+    name,
+    tid,
+    team: [team.region, team.name].filter(Boolean).join(" "),
+    teamShort: team.abbrev || team.name || "Unknown",
+    conference: conferenceForTeam(team),
+    position: normalizePosition(p.pos),
+    rawPosition: String(p.pos || "?").toUpperCase(),
+    height: Number(p.hgt) || null,
+    heightText: heightLabel(p.hgt),
+    age,
+    jersey,
+    image: typeof p.imgURL === "string" ? p.imgURL : ""
+  };
+}
+
+async function loadRoster() {
+  setStatus("Loading roster…");
+
+  try {
+    const response = await fetch(ROSTER_URL, { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error("Roster server returned HTTP " + response.status);
+    }
+
+    const data = await response.json();
+    if (!data || !Array.isArray(data.players) || !Array.isArray(data.teams)) {
+      throw new Error("The roster data has an unexpected format.");
+    }
+
+    teamsById = {};
+    data.teams.forEach(team => {
+      if (team && Number.isInteger(Number(team.tid))) {
+        teamsById[Number(team.tid)] = team;
+      }
+    });
+
+    players = data.players
+      .map(cleanPlayer)
+      .filter(Boolean);
+
+    const unique = new Map();
+    players.forEach(p => {
+      const key = p.name.toLowerCase() + "|" + p.tid;
+      if (!unique.has(key)) unique.set(key, p);
+    });
+    players = [...unique.values()].sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
+
+    if (players.length < 50) {
+      throw new Error("Too few players were found in the roster.");
+    }
+
+    const options = $("playerOptions");
+    options.replaceChildren();
+    players.forEach(p => {
+      const option = document.createElement("option");
+      option.value = p.name;
+      options.appendChild(option);
+    });
+
+    setStatus(players.length + " players loaded", "ready");
+  } catch (error) {
+    console.error("Roster load failed:", error);
+    setStatus("Roster unavailable", "error");
+    showMessage("playerMessage",
+      "Couldn't load the roster. Check your internet connection and refresh the page. Details: " +
+      error.message, "bad");
+  }
+}
+
+/* ---------------------------
+   PLAYER GAME
+---------------------------- */
+
+function startPlayerGame() {
+  playerGuesses = [];
+  playerFinished = false;
+  hintsUsed = 0;
+  hideMessage("playerMessage");
+
+  const dailyKey = todayKey();
+  const saved = safeRead(PLAYER_DAILY_KEY, null);
+
+  if (saved && saved.date === dailyKey && saved.targetName) {
+    mysteryPlayer = players.find(p => p.name === saved.targetName) || null;
+  }
+
+  if (!mysteryPlayer) {
+    mysteryPlayer = dailyPick(players, "buzzer-player-" + dailyKey);
+  }
+
+  if (!mysteryPlayer) return;
+
+  $("playerRoundText").textContent = "Daily mystery · " + dailyKey;
+  $("playerInput").value = "";
+  $("playerInput").disabled = false;
+  $("guessButton").disabled = false;
+  $("hintButton").disabled = false;
   renderClues();
-  $("guessInput").focus();
+  renderPlayerGuesses();
+  updateAttemptCounter();
+}
+
+function resetPlayerGame() {
+  // This restarts the current mystery; it does not change the daily answer.
+  startPlayerGame();
 }
 
 function renderClues() {
-  if (mode !== "mystery") return;
-  $("clues").innerHTML = answer.clues.slice(0,clueCount).map((clue,i) => `
-    <div class="clue">
-      <div class="clue-num">${i+1}</div>
-      <div><small>${i===0?"SUBTLE CLUE":i===answer.clues.length-1?"EASIEST CLUE":"CLUE UNLOCKED"}</small>
-      <p>${safeText(clue)}</p></div>
-    </div>`).join("");
+  const p = mysteryPlayer;
+  if (!p) return;
+
+  $("clueConference").textContent = p.conference;
+  $("cluePosition").textContent = p.position;
+  $("clueHeight").textContent = p.heightText;
+  $("clueAge").textContent = p.age == null ? "Unknown" : p.age;
+  $("clueTeam").textContent = p.teamShort;
+  $("clueJersey").textContent = p.jersey;
 }
 
-function compareAttribute(field, guessed, target) {
-  const a = guessed[field], b = target[field];
-  if (a === b) return {cls:"correct", arrow:"✓"};
-  if (field === "age" || field === "height" || field === "number") {
-    const diff = Math.abs(a-b);
-    const close = field === "age" ? diff <= 2 :
-                  field === "height" ? diff <= 2 : diff <= 2;
-    return {cls:close?"close":"wrong",arrow:a<b?"↑":"↓"};
-  }
-  if (field === "team") {
-    const close = divisions[a] && divisions[a] === divisions[b];
-    return {cls:close?"close":"wrong",arrow:""};
-  }
-  if (field === "division") return {cls:"wrong",arrow:""};
-  if (field === "position") {
-    const close = (a==="Guard" && b==="Forward") ||
-                  (a==="Forward" && b==="Guard") ||
-                  (a==="Forward" && b==="Center") ||
-                  (a==="Center" && b==="Forward");
-    return {cls:close?"close":"wrong",arrow:""};
-  }
-  return {cls:"wrong",arrow:""};
+function updateAttemptCounter() {
+  $("attemptCounter").textContent =
+    playerGuesses.length + " / " + MAX_PLAYER_GUESSES + " guesses";
 }
 
-function renderComparison(player) {
-  const fields = [
-    ["team","TEAM"],["division","DIVISION"],["age","AGE"],
-    ["height","HEIGHT"],["number","NUMBER"],["position","POSITION"]
-  ];
-  const rows = fields.map(([field,label]) => {
-    const result = compareAttribute(field,player,answer);
-    let value = player[field];
-    if (field === "height") value = Math.floor(value/12)+"'"+(value%12)+'"';
-    return `<td class="${result.cls}">${safeText(value)}
-      ${result.arrow?`<span class="arrow">${result.arrow}</span>`:""}</td>`;
-  }).join("");
-  $("comparisonArea").innerHTML = `
-    <div class="table-wrap">
-    <table class="comparison-table">
-      <thead><tr><th>PLAYER</th>${fields.map(f=>`<th>${f[1]}</th>`).join("")}</tr></thead>
-      <tbody>${guesses.map(name => {
-        const p = players.find(x=>x.name===name);
-        const cells = fields.map(([field]) => {
-          const r = compareAttribute(field,p,answer);
-          let val = p[field];
-          if(field==="height") val = Math.floor(val/12)+"'"+(val%12)+'"';
-          return `<td class="${r.cls}">${safeText(val)}${r.arrow?`<span class="arrow">${r.arrow}</span>`:""}</td>`;
-        }).join("");
-        return `<tr><td>${safeText(p.name)}</td>${cells}</tr>`;
-      }).join("")}
-    </tbody></table></div>
-    <p class="muted" style="font-size:12px">↑ mystery value is higher · ↓ mystery value is lower · yellow means close</p>`;
+function comparePosition(a, b) {
+  if (a === b) return "correct";
+  if (a.includes("/") && a.split("/").some(x => b.includes(x))) return "close";
+  if (b.includes("/") && b.split("/").some(x => a.includes(x))) return "close";
+  return "";
 }
 
-function submitGuess(event) {
+function compareHeight(a, b) {
+  if (a == null || b == null) return "";
+  if (a === b) return "correct";
+  if (Math.abs(a - b) <= 2) return "close";
+  return "";
+}
+
+function compareAge(a, b) {
+  if (a == null || b == null) return "";
+  if (a === b) return "correct";
+  if (Math.abs(a - b) <= 2) return "close";
+  return "";
+}
+
+function cell(text, status = "", name = false) {
+  const el = document.createElement("div");
+  el.className = "guess-cell " + status + (name ? " name" : "");
+  el.textContent = text;
+  return el;
+}
+
+function renderPlayerGuesses() {
+  const list = $("guessList");
+  list.replaceChildren();
+  $("emptyGuesses").classList.toggle("hidden", playerGuesses.length > 0);
+
+  playerGuesses.forEach(g => {
+    const row = document.createElement("div");
+    row.className = "guess-row";
+
+    row.appendChild(cell(g.name, "", true));
+
+    const teamStatus = g.tid === mysteryPlayer.tid ? "correct" : "";
+    row.appendChild(cell(g.teamShort, teamStatus));
+
+    row.appendChild(cell(
+      g.position,
+      comparePosition(g.position, mysteryPlayer.position)
+    ));
+
+    row.appendChild(cell(
+      g.heightText,
+      compareHeight(g.height, mysteryPlayer.height)
+    ));
+
+    row.appendChild(cell(
+      g.age == null ? "?" : String(g.age),
+      compareAge(g.age, mysteryPlayer.age)
+    ));
+
+    list.appendChild(row);
+  });
+
+  updateAttemptCounter();
+}
+
+function submitPlayerGuess(event) {
   event.preventDefault();
-  if (ended) return;
-  const typed = $("guessInput").value.trim().toLowerCase();
-  const player = players.find(p=>p.name.toLowerCase()===typed);
-  if (!player) {
-    $("message").textContent = "Choose a player from the suggestions list.";
-    return;
-  }
-  if (guesses.includes(player.name)) {
-    $("message").textContent = "You already guessed that player. Try another!";
-    return;
-  }
+  if (playerFinished || !mysteryPlayer) return;
 
-  guesses.push(player.name);
-  $("guessCount").textContent = guesses.length;
-  $("guessInput").value = "";
+  const value = $("playerInput").value.trim().toLowerCase();
+  const guess = players.find(p => p.name.toLowerCase() === value);
 
-  if (mode === "wordle") renderComparison(player);
-
-  if (player.name === answer.name) {
-    finishRound(true);
+  if (!guess) {
+    showMessage("playerMessage",
+      "Choose a player from the suggestion list so the name matches the roster.",
+      "warn");
     return;
   }
 
-  if (mode === "mystery") {
-    // Reveal clue six after the fifth wrong guess, before the final guess.
-    clueCount = Math.min(guesses.length + 1, answer.clues.length);
-    renderClues();
+  if (playerGuesses.some(p => p.name === guess.name)) {
+    showMessage("playerMessage", "You already guessed that player. Try another!", "warn");
+    return;
   }
 
-  if (guesses.length >= 6) {
-    finishRound(false);
+  playerGuesses.push(guess);
+  $("playerInput").value = "";
+  renderPlayerGuesses();
+
+  if (guess.name === mysteryPlayer.name) {
+    playerFinished = true;
+    finishPlayerGame(true);
+    showMessage("playerMessage",
+      "BUZZER! Correct — the mystery player was " + mysteryPlayer.name + " 🏆",
+      "good");
+    return;
+  }
+
+  if (playerGuesses.length >= MAX_PLAYER_GUESSES) {
+    playerFinished = true;
+    finishPlayerGame(false);
+    showMessage("playerMessage",
+      "Out of guesses! The answer was " + mysteryPlayer.name + ". Better luck next time.",
+      "bad");
   } else {
-    const left = 6 - guesses.length;
-    $("message").textContent = mode === "mystery"
-      ? `Not this one! ${left} ${left===1?"guess":"guesses"} left — a new clue is unlocked.`
-      : `Not quite! ${left} ${left===1?"guess":"guesses"} left. Check the colors and arrows.`;
-    $("message").classList.remove("pop");
-    void $("message").offsetWidth;
-    $("message").classList.add("pop");
+    showMessage("playerMessage",
+      "Not quite! Check the colors and use the clues to narrow it down.",
+      "warn");
+  }
+
+  if (playerFinished) {
+    $("playerInput").disabled = true;
+    $("guessButton").disabled = true;
+    $("hintButton").disabled = true;
   }
 }
 
-function finishRound(won) {
-  ended = true;
-  played++;
-  if (won) { wins++; streak++; } else { streak=0; }
-  updateStats();
-  $("guessForm").style.display = "none";
-  $("result").classList.add("show");
-  $("resultEmoji").textContent = won ? (guesses.length===1?"⚡":"🏆") : "🏀";
-  $("resultTitle").textContent = won ? "BUZZER!" : "FINAL WHISTLE";
-  $("resultText").textContent = won
-    ? `You found ${answer.name} in ${guesses.length} ${guesses.length===1?"guess":"guesses"}. ${streak>1?streak+" win streak — you're on fire!":"Nice work. Ready for another round?"}`
-    : `The mystery player was ${answer.name}. Study up and take another shot!`;
-  $("message").textContent = won ? "🎉 Correct answer!" : "Round over.";
-  if (mode === "mystery") {
-    clueCount = answer.clues.length;
-    renderClues();
+function finishPlayerGame(won) {
+  const key = PLAYER_DAILY_KEY;
+  const today = todayKey();
+  const old = safeRead(key, {});
+  safeWrite(key, {
+    date: today,
+    targetName: mysteryPlayer.name,
+    finished: true,
+    won,
+    guesses: playerGuesses.length
+  });
+
+  const stats = safeRead(STATS_KEY, {
+    playerPlayed: 0, playerWins: 0, playerStreak: 0,
+    wordPlayed: 0, wordWins: 0, wordStreak: 0
+  });
+
+  if (!(old.date === today && old.finished)) {
+    stats.playerPlayed++;
+    if (won) {
+      stats.playerWins++;
+      stats.playerStreak++;
+    } else {
+      stats.playerStreak = 0;
+    }
+    safeWrite(STATS_KEY, stats);
   }
-  if (mode === "wordle" && $("comparisonArea").innerHTML === "") {
-    renderComparison({name:""});
+  updateStatsUI();
+}
+
+function revealHint() {
+  if (!mysteryPlayer || playerFinished) return;
+
+  const hints = [
+    ["clueConference", "Conference"],
+    ["cluePosition", "Position"],
+    ["clueHeight", "Height"],
+    ["clueAge", "Age"],
+    ["clueTeam", "Team"],
+    ["clueJersey", "Jersey number"]
+  ];
+
+  if (hintsUsed >= hints.length) {
+    showMessage("playerMessage", "You've revealed every available hint.", "warn");
+    return;
+  }
+
+  const [id, label] = hints[hintsUsed];
+  const el = $(id);
+  el.style.color = "var(--orange)";
+  el.style.textShadow = "0 0 18px #ff6b1a55";
+  hintsUsed++;
+
+  showMessage("playerMessage", "Hint revealed: " + label + ".", "good");
+}
+
+function revealAnswer() {
+  if (!mysteryPlayer || playerFinished) return;
+
+  playerFinished = true;
+  finishPlayerGame(false);
+  $("playerInput").disabled = true;
+  $("guessButton").disabled = true;
+  $("hintButton").disabled = true;
+  showMessage("playerMessage",
+    "The mystery player was " + mysteryPlayer.name + ". Start a new game to practise.",
+    "bad");
+}
+
+/* ---------------------------
+   WORDLE GAME
+---------------------------- */
+
+function startWordGame() {
+  targetWord = dailyPick(WORDS, "buzzer-word-" + todayKey());
+  wordGuesses = [];
+  currentWord = "";
+  wordFinished = false;
+  wordKeyboardStatus = {};
+  hideMessage("wordMessage");
+
+  const saved = safeRead(WORD_DAILY_KEY, null);
+  if (saved && saved.date === todayKey()) {
+    wordGuesses = Array.isArray(saved.guesses) ? saved.guesses : [];
+    wordFinished = Boolean(saved.finished);
+    wordKeyboardStatus = saved.keyboard || {};
+  }
+
+  renderWordGrid();
+  renderKeyboard();
+}
+
+function resetWordGame() {
+  // Rebuilds the board but keeps the same daily answer and saved guesses.
+  startWordGame();
+}
+
+function renderWordGrid() {
+  const grid = $("wordGrid");
+  grid.replaceChildren();
+
+  for (let r = 0; r < MAX_WORD_GUESSES; r++) {
+    const row = document.createElement("div");
+    row.className = "word-row";
+
+    for (let c = 0; c < 5; c++) {
+      const box = document.createElement("div");
+      box.className = "letter";
+
+      const submitted = wordGuesses[r];
+      if (submitted) {
+        box.textContent = submitted.word[c] || "";
+        box.classList.add(submitted.result[c]);
+      } else if (r === wordGuesses.length && !wordFinished) {
+        box.textContent = currentWord[c] || "";
+        if (currentWord[c]) box.classList.add("filled");
+      }
+
+      row.appendChild(box);
+    }
+    grid.appendChild(row);
+  }
+
+  if (wordFinished) {
+    $("wordMessage").classList.add("show");
+    $("wordMessage").classList.remove("good", "warn", "bad");
+    $("wordMessage").classList.add(
+      wordGuesses.length && wordGuesses[wordGuesses.length - 1].word === targetWord
+        ? "good" : "warn"
+    );
+    $("wordMessage").textContent =
+      wordGuesses.some(g => g.word === targetWord)
+        ? "Excellent! You solved today's word. 🏆"
+        : "Today's word was " + targetWord.toUpperCase() + ". Come back tomorrow!";
   }
 }
 
-function playAgain() {
-  startGame(mode);
+function renderKeyboard() {
+  const keyboard = $("keyboard");
+  keyboard.replaceChildren();
+
+  const rows = ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"];
+
+  rows.forEach((letters, index) => {
+    const row = document.createElement("div");
+    row.className = "key-row";
+
+    if (index === 2) {
+      row.appendChild(makeKey("ENTER", "wide", submitWord));
+    }
+
+    for (const letter of letters) {
+      row.appendChild(makeKey(letter, "", () => addLetter(letter)));
+    }
+
+    if (index === 2) {
+      row.appendChild(makeKey("⌫", "wide", deleteLetter));
+    }
+
+    keyboard.appendChild(row);
+  });
+
+  keyboard.querySelectorAll("[data-letter]").forEach(key => {
+    const letter = key.dataset.letter;
+    if (wordKeyboardStatus[letter]) key.classList.add(wordKeyboardStatus[letter]);
+  });
 }
 
-function goMenu() {
-  $("game").classList.remove("active");
-  $("menu").classList.add("active");
-  updateStats();
+function makeKey(text, extraClass, action) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "key " + extraClass;
+  button.textContent = text;
+  button.addEventListener("click", action);
+
+  if (text.length === 1 && /^[A-Z]$/.test(text)) {
+    button.dataset.letter = text;
+  }
+
+  return button;
 }
 
-function updateStats() {
-  $("menuPlayed").textContent = played;
-  $("menuWins").textContent = wins;
-  $("menuStreak").textContent = streak;
+function addLetter(letter) {
+  if (wordFinished || currentWord.length >= 5) return;
+  currentWord += letter.toLowerCase();
+  renderWordGrid();
 }
 
-$("guessForm").addEventListener("submit",submitGuess);
-$("playerList").innerHTML = players
-  .map(p=>`<option value="${safeText(p.name)}"></option>`).join("");
-updateStats();
+function deleteLetter() {
+  if (wordFinished) return;
+  currentWord = currentWord.slice(0, -1);
+  renderWordGrid();
+}
+
+function scoreWord(guess, answer) {
+  const result = Array(5).fill("miss");
+  const remaining = answer.split("");
+
+  for (let i = 0; i < 5; i++) {
+    if (guess[i] === answer[i]) {
+      result[i] = "hit";
+      remaining[i] = null;
+    }
+  }
+
+  for (let i = 0; i < 5; i++) {
+    if (result[i] === "hit") continue;
+    const index = remaining.indexOf(guess[i]);
+    if (index !== -1) {
+      result[i] = "present";
+      remaining[index] = null;
+    }
+  }
+  return result;
+}
+
+function submitWord() {
+  if (wordFinished) return;
+
+  if (currentWord.length !== 5) {
+    showMessage("wordMessage", "Your guess must be five letters long.", "warn");
+    return;
+  }
+
+  const guess = currentWord.toLowerCase();
+  if (!WORDS.includes(guess)) {
+    showMessage("wordMessage",
+      "That word isn't in this game's word list. Try another basketball word.",
+      "warn");
+    return;
+  }
+
+  const result = scoreWord(guess, targetWord);
+  wordGuesses.push({ word: guess, result });
+
+  result.forEach((status, i) => {
+    const letter = guess[i].toUpperCase();
+    const old = wordKeyboardStatus[letter];
+    const priority = { miss: 1, present: 2, hit: 3 };
+    if (!old || priority[status] > priority[old]) {
+      wordKeyboardStatus[letter] = status;
+    }
+  });
+
+  currentWord = "";
+
+  if (guess === targetWord || wordGuesses.length >= MAX_WORD_GUESSES) {
+    wordFinished = true;
+    finishWordGame(guess === targetWord);
+  }
+
+  saveWordProgress();
+  renderWordGrid();
+  renderKeyboard();
+
+  if (!wordFinished) {
+    hideMessage("wordMessage");
+  }
+}
+
+function saveWordProgress() {
+  safeWrite(WORD_DAILY_KEY, {
+    date: todayKey(),
+    guesses: wordGuesses,
+    finished: wordFinished,
+    keyboard: wordKeyboardStatus
+  });
+}
+
+function finishWordGame(won) {
+  const previous = safeRead(WORD_DAILY_KEY, null);
+  const stats = safeRead(STATS_KEY, {
+    playerPlayed: 0, playerWins: 0, playerStreak: 0,
+    wordPlayed: 0, wordWins: 0, wordStreak: 0
+  });
+
+  if (!(previous && previous.date === todayKey() && previous.finished)) {
+    stats.wordPlayed++;
+    if (won) {
+      stats.wordWins++;
+      stats.wordStreak++;
+    } else {
+      stats.wordStreak = 0;
+    }
+    safeWrite(STATS_KEY, stats);
+  }
+
+  saveWordProgress();
+  updateStatsUI();
+
+  const squares = wordGuesses.map(g =>
+    g.result.map(s => s === "hit" ? "🟩" : s === "present" ? "🟨" : "⬛").join("")
+  ).join("\n");
+
+  lastShareText = "BUZZER NBA Wordle " + todayKey() + "\n" +
+    (won ? wordGuesses.length + "/" + MAX_WORD_GUESSES : "X/" + MAX_WORD_GUESSES) +
+    "\n\n" + squares;
+}
+
+async function shareResult() {
+  if (!wordFinished) {
+    showMessage("wordMessage", "Finish the puzzle before sharing your result.", "warn");
+    return;
+  }
+
+  try {
+    if (navigator.share) {
+      await navigator.share({ title: "BUZZER NBA Wordle", text: lastShareText });
+    } else if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(lastShareText);
+      showMessage("wordMessage", "Result copied! Paste it wherever you want to share.", "good");
+    } else {
+      showMessage("wordMessage", lastShareText, "good");
+    }
+  } catch (error) {
+    if (error.name !== "AbortError") {
+      showMessage("wordMessage", lastShareText, "good");
+    }
+  }
+}
+
+document.addEventListener("keydown", event => {
+  if ($("wordScreen").classList.contains("hidden")) return;
+  if (event.ctrlKey || event.metaKey || event.altKey) return;
+
+  if (event.key === "Enter") {
+    event.preventDefault();
+    submitWord();
+  } else if (event.key === "Backspace") {
+    event.preventDefault();
+    deleteLetter();
+  } else if (/^[a-zA-Z]$/.test(event.key)) {
+    addLetter(event.key.toUpperCase());
+  }
+});
+
+/* ---------------------------
+   STATS
+---------------------------- */
+
+function updateStatsUI() {
+  const s = safeRead(STATS_KEY, {
+    playerPlayed: 0, playerWins: 0, playerStreak: 0,
+    wordPlayed: 0, wordWins: 0, wordStreak: 0
+  });
+
+  const played = s.playerPlayed + s.wordPlayed;
+  const wins = s.playerWins + s.wordWins;
+  const streak = Math.max(s.playerStreak, s.wordStreak);
+
+  $("statPlayed").textContent = played;
+  $("statWins").textContent = wins;
+  $("statRate").textContent = played ? Math.round(wins / played * 100) + "%" : "0%";
+  $("statStreak").textContent = streak;
+}
+
+/* ---------------------------
+   INITIALIZE
+---------------------------- */
+
+$("playerForm").addEventListener("submit", submitPlayerGuess);
+
+loadRoster();
+updateStatsUI();
 </script>
 </body>
 </html>
