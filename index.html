@@ -4,1304 +4,4497 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#101114">
-<title>BUZZER — NBA Guessing Games</title>
+<meta name="theme-color" content="#111111">
+<meta name="description" content="BUZZER — The ultimate NBA player guessing game.">
+<title>BUZZER — NBA Guessing Game</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 <style>
+/* =========================================================
+   BUZZER — COMPLETE VISUAL SYSTEM
+   ========================================================= */
+
 :root {
-  --bg: #101114;
-  --panel: #191a20;
-  --panel2: #22242c;
-  --orange: #ff6b1a;
-  --orange2: #ff8c42;
-  --text: #f5f5f7;
-  --muted: #9b9da8;
-  --green: #36b878;
-  --yellow: #e6b83f;
-  --red: #ef5350;
-  --border: #30313a;
-  --radius: 18px;
+  --bg: #101010;
+  --bg-soft: #171717;
+  --panel: #1d1d1d;
+  --panel-hover: #252525;
+  --panel-light: #292929;
+  --border: #343434;
+  --border-light: #454545;
+  --text: #f6f6f6;
+  --muted: #a4a4a4;
+  --subtle: #707070;
+  --orange: #ff6b24;
+  --orange-dark: #d94d0c;
+  --orange-glow: rgba(255,107,36,.17);
+  --green: #39d98a;
+  --green-bg: rgba(57,217,138,.14);
+  --red: #ff646b;
+  --red-bg: rgba(255,100,107,.13);
+  --yellow: #ffca58;
+  --yellow-bg: rgba(255,202,88,.14);
+  --blue: #63aaff;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --max-width: 1180px;
+  --shadow: 0 14px 50px rgba(0,0,0,.25);
 }
-* { box-sizing: border-box; }
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scrollbar-color: #474747 var(--bg);
+}
+
 body {
   margin: 0;
   min-height: 100vh;
   background:
-    radial-gradient(ellipse at 50% -20%, #46200f 0, transparent 45%),
+    radial-gradient(ellipse at 50% -20%, rgba(255,107,36,.11), transparent 55%),
     var(--bg);
   color: var(--text);
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", sans-serif;
+  font-family: Inter, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
 }
-button, input, select { font: inherit; }
-button { cursor: pointer; }
-button:focus-visible, input:focus-visible, select:focus-visible {
-  outline: 3px solid var(--orange2);
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  color: inherit;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--orange);
   outline-offset: 3px;
 }
-button:disabled { opacity: .45; cursor: not-allowed; }
-button:active:not(:disabled) { transform: scale(.98); }
-header {
-  position: sticky;
-  top: 0;
-  z-index: 5;
-  background: rgba(16,17,20,.92);
-  backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--border);
+
+button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+  transform: none !important;
 }
-.header-inner {
-  max-width: 1100px;
-  margin: auto;
-  padding: 15px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
+
+button,
+.clickable {
+  -webkit-tap-highlight-color: transparent;
 }
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 25px;
-  font-weight: 1000;
-  letter-spacing: 2px;
+
+a {
+  color: inherit;
 }
-.brand-icon {
-  width: 39px;
-  height: 39px;
-  display: grid;
-  place-items: center;
-  border-radius: 12px;
-  color: #17120e;
-  background: var(--orange);
-  box-shadow: 0 0 25px #ff6b1a35;
+
+.hidden {
+  display: none !important;
 }
-.brand small {
-  display: block;
-  font-size: 9px;
-  letter-spacing: 3px;
+
+.muted {
   color: var(--muted);
 }
-.header-status {
-  color: var(--muted);
-  font-size: 12px;
-  text-align: right;
+
+.orange {
+  color: var(--orange);
 }
-.status-dot {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  margin-right: 5px;
-  border-radius: 50%;
-  background: var(--yellow);
+
+.green-text {
+  color: var(--green);
 }
-.status-dot.ready { background: var(--green); }
-.status-dot.error { background: var(--red); }
-main {
-  width: min(100% - 30px, 950px);
-  margin: 30px auto 60px;
+
+.red-text {
+  color: var(--red);
 }
-.hero { text-align: center; padding: 20px 0 24px; }
+
+.yellow-text {
+  color: var(--yellow);
+}
+
+.container {
+  width: min(var(--max-width), calc(100% - 40px));
+  margin: 0 auto;
+}
+
 .eyebrow {
   color: var(--orange);
   font-size: 11px;
-  font-weight: 900;
-  letter-spacing: 3px;
+  font-weight: 800;
   text-transform: uppercase;
+  letter-spacing: 2px;
 }
-h1 {
-  margin: 8px 0;
-  font-size: clamp(40px, 8vw, 66px);
-  line-height: 1;
-  letter-spacing: -3px;
+
+.display-font {
+  font-family: "Barlow Condensed", Impact, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -.5px;
 }
-h1 span { color: var(--orange); }
-.hero p {
+
+.section-heading {
+  font-family: "Barlow Condensed", Impact, sans-serif;
+  font-size: 30px;
+  line-height: 1.05;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.section-subtitle {
   color: var(--muted);
-  max-width: 530px;
-  margin: 14px auto 0;
-  line-height: 1.6;
+  margin: 7px 0 0;
+  font-size: 13px;
 }
-.panel {
-  background: linear-gradient(145deg, #1b1c22, #15161b);
+
+.section-block {
+  margin-top: 42px;
+}
+
+.section-title-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.card {
+  background: linear-gradient(145deg, #202020, #191919);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 22px;
-  margin-bottom: 18px;
-  box-shadow: 0 15px 45px #00000017;
+  box-shadow: var(--shadow);
 }
+
+.btn {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 9px;
+  padding: 12px 17px;
+  min-height: 43px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: var(--panel-light);
+  color: var(--text);
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform .15s, background .15s, border-color .15s;
+}
+
+.btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background: #343434;
+}
+
+.btn-primary {
+  background: var(--orange);
+  color: #17100c;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #ff854c;
+}
+
+.btn-secondary {
+  background: transparent;
+  border-color: var(--border-light);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  border-color: var(--orange);
+  background: var(--orange-glow);
+}
+
+.btn-danger {
+  color: var(--red);
+  border-color: rgba(255,100,107,.3);
+  background: var(--red-bg);
+}
+
+.btn-small {
+  min-height: 34px;
+  padding: 7px 11px;
+  font-size: 12px;
+}
+
+.btn-full {
+  width: 100%;
+}
+
+.icon {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+  border-radius: 9px;
+  background: var(--orange-glow);
+  color: var(--orange);
+  font-weight: 900;
+}
+
+/* =========================================================
+   HEADER AND NAVIGATION
+   ========================================================= */
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(16,16,16,.92);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid rgba(255,255,255,.07);
+}
+
+.nav {
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.brand-mark {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  background: var(--orange);
+  color: #141414;
+  border-radius: 12px;
+  font-family: "Barlow Condensed", Impact, sans-serif;
+  font-size: 27px;
+  font-weight: 900;
+  transform: skew(-4deg);
+}
+
+.brand-name {
+  font-family: "Barlow Condensed", Impact, sans-serif;
+  font-weight: 900;
+  font-size: 29px;
+  line-height: 1;
+  letter-spacing: 1px;
+}
+
+.brand-caption {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.nav-link {
+  padding: 10px 12px;
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid transparent;
+  border-radius: 9px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 800;
+  transition: .15s;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  background: var(--panel);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.nav-link.active {
+  color: var(--orange);
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 10px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--yellow);
+}
+
+.status-dot.online {
+  background: var(--green);
+  box-shadow: 0 0 8px rgba(57,217,138,.4);
+}
+
+.status-dot.offline {
+  background: var(--red);
+}
+
+/* =========================================================
+   PAGE VIEWS
+   ========================================================= */
+
+main {
+  min-height: 70vh;
+}
+
+.page {
+  display: none;
+  padding: 35px 0 70px;
+  animation: pageIn .3s ease both;
+}
+
+.page.active {
+  display: block;
+}
+
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  min-height: 300px;
+  padding: 45px;
+  border-radius: 22px;
+  border: 1px solid #39302a;
+  background:
+    radial-gradient(circle at 82% 45%, rgba(255,107,36,.23), transparent 24%),
+    linear-gradient(120deg, #24201e 0%, #181818 65%, #211710 100%);
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  width: 320px;
+  height: 320px;
+  right: -70px;
+  top: -70px;
+  border: 2px solid rgba(255,107,36,.17);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 22px rgba(255,107,36,.025),
+    0 0 0 48px rgba(255,107,36,.025);
+  pointer-events: none;
+}
+
+.hero::after {
+  content: "B";
+  position: absolute;
+  right: 50px;
+  top: 50%;
+  transform: translateY(-50%) rotate(-9deg);
+  color: rgba(255,107,36,.08);
+  font-family: "Barlow Condensed", Impact, sans-serif;
+  font-weight: 900;
+  font-size: 270px;
+  line-height: .8;
+  pointer-events: none;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 630px;
+}
+
+.hero h1 {
+  margin: 12px 0 10px;
+  font-family: "Barlow Condensed", Impact, sans-serif;
+  font-size: clamp(54px, 8vw, 94px);
+  line-height: .87;
+  letter-spacing: -2px;
+  font-weight: 900;
+}
+
+.hero h1 span {
+  color: var(--orange);
+}
+
+.hero p {
+  max-width: 480px;
+  color: #bdbdbd;
+  line-height: 1.8;
+  font-size: 14px;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+
+.hero-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.hero-mini-stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.hero-mini-stat strong {
+  color: var(--text);
+}
+
+/* =========================================================
+   STAT CARDS
+   ========================================================= */
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.stat-card {
+  padding: 19px;
+  border-radius: 14px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  min-width: 0;
+}
+
+.stat-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.stat-label {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.stat-value {
+  margin-top: 11px;
+  font-family: "Barlow Condensed", Impact, sans-serif;
+  font-size: 39px;
+  line-height: 1;
+  font-weight: 800;
+}
+
+.stat-note {
+  margin-top: 7px;
+  color: var(--subtle);
+  font-size: 10px;
+}
+
+/* =========================================================
+   GAME MODE CARDS
+   ========================================================= */
+
 .mode-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  gap: 18px;
 }
+
 .mode-card {
-  min-height: 175px;
+  position: relative;
+  overflow: hidden;
+  padding: 25px;
+  cursor: pointer;
   text-align: left;
-  color: var(--text);
-  padding: 22px;
+  border: 1px solid var(--border);
+  border-radius: 17px;
+  background: linear-gradient(135deg, #222 0%, #191919 100%);
+  transition: transform .2s, border-color .2s, background .2s;
+}
+
+.mode-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--orange);
+  background: linear-gradient(135deg, #2b211b 0%, #1b1b1b 100%);
+}
+
+.mode-card::after {
+  content: attr(data-number);
+  position: absolute;
+  right: 15px;
+  bottom: -25px;
+  color: rgba(255,255,255,.035);
+  font-family: "Barlow Condensed", Impact, sans-serif;
+  font-size: 130px;
+  font-weight: 900;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.mode-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 22px;
+}
+
+.mode-icon {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 14px;
+  background: var(--orange-glow);
+  border: 1px solid rgba(255,107,36,.25);
+  font-size: 26px;
+}
+
+.mode-tag {
+  padding: 6px 9px;
+  color: var(--orange);
+  background: var(--orange-glow);
+  border-radius: 99px;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.mode-card h3 {
+  margin: 0;
+  font-family: "Barlow Condensed", Impact, sans-serif;
+  font-size: 33px;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.mode-card p {
+  position: relative;
+  z-index: 1;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.8;
+  max-width: 400px;
+}
+
+.mode-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  color: var(--orange);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+/* =========================================================
+   GAME PAGE HEADER
+   ========================================================= */
+
+.game-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 22px;
+}
+
+.back-button {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 8px 0;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.back-button:hover {
+  color: var(--orange);
+}
+
+.game-title {
+  margin: 5px 0 0;
+  font-family: "Barlow Condensed", Impact, sans-serif;
+  font-size: clamp(36px, 5vw, 54px);
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.game-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  align-items: start;
+  gap: 20px;
+}
+
+.game-main {
+  min-width: 0;
+}
+
+.game-sidebar {
+  display: grid;
+  gap: 15px;
+}
+
+.game-panel {
+  padding: 23px;
   border-radius: 16px;
   border: 1px solid var(--border);
   background: var(--panel);
-  transition: .2s;
 }
-.mode-card:hover {
+
+.panel-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.panel-heading h3 {
+  margin: 0;
+  font-family: "Barlow Condensed", Impact, sans-serif;
+  font-size: 23px;
+  text-transform: uppercase;
+}
+
+.panel-description {
+  margin: -7px 0 17px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.round-label {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* =========================================================
+   INPUTS AND AUTOCOMPLETE
+   ========================================================= */
+
+.guess-form {
+  display: flex;
+  gap: 9px;
+  align-items: stretch;
+}
+
+.input-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.text-input,
+.select-input {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  background: #111;
+  color: var(--text);
+  padding: 12px 14px;
+  outline: none;
+}
+
+.text-input::placeholder {
+  color: #777;
+}
+
+.text-input:focus,
+.select-input:focus {
   border-color: var(--orange);
-  transform: translateY(-3px);
-  background: #222026;
+  box-shadow: 0 0 0 3px var(--orange-glow);
 }
-.mode-emoji { font-size: 30px; }
-.mode-card h2 { margin: 12px 0 6px; font-size: 20px; }
-.mode-card p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
-.section-heading {
+
+.input-caption {
+  margin-top: 8px;
+  color: var(--subtle);
+  font-size: 10px;
+}
+
+.suggestions {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 20;
+  max-height: 240px;
+  overflow-y: auto;
+  background: #202020;
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+}
+
+.suggestion {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 14px;
-}
-.section-heading h2 { margin: 0; font-size: 19px; }
-.muted { color: var(--muted); }
-.small { font-size: 12px; }
-.btn {
-  border: 0;
-  border-radius: 11px;
-  padding: 12px 16px;
-  font-weight: 850;
-  color: #17120e;
-  background: var(--orange);
-  transition: .15s;
-}
-.btn:hover { background: var(--orange2); }
-.btn.secondary {
-  color: var(--text);
-  background: var(--panel2);
-  border: 1px solid var(--border);
-}
-.btn.secondary:hover { border-color: var(--orange); }
-.btn.danger { color: white; background: #8b3030; }
-.btn.full { width: 100%; }
-.btn-row { display: flex; gap: 9px; flex-wrap: wrap; }
-input, select {
   width: 100%;
-  min-width: 0;
-  color: var(--text);
-  background: #111216;
-  border: 1px solid var(--border);
-  border-radius: 11px;
-  padding: 13px 14px;
-}
-input::placeholder { color: #6f717c; }
-input:focus, select:focus { border-color: var(--orange); outline: none; }
-label {
-  display: block;
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 700;
-  margin-bottom: 7px;
-}
-.form-row { display: flex; gap: 9px; }
-.form-row input { flex: 1; }
-.message {
-  display: none;
-  margin-top: 13px;
-  padding: 12px 14px;
-  border: 1px solid var(--border);
-  border-radius: 11px;
-  line-height: 1.5;
-  font-size: 13px;
-}
-.message.show { display: block; }
-.message.good { background: #143326; border-color: #285d43; }
-.message.warn { background: #332a15; border-color: #705b28; }
-.message.bad { background: #361b1b; border-color: #6b3333; }
-.clue-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-}
-.clue {
-  padding: 14px 10px;
-  background: #111216;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  text-align: center;
-}
-.clue strong { display: block; margin-top: 5px; font-size: 15px; }
-.clue span { color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: 1px; }
-.guess-list { display: grid; gap: 8px; margin-top: 15px; }
-.guess-row {
-  display: grid;
-  grid-template-columns: minmax(100px, 1.4fr) repeat(4, minmax(0, 1fr));
-  gap: 6px;
-}
-.guess-cell {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  min-height: 48px;
-  padding: 7px 4px;
-  border: 1px solid var(--border);
-  background: #111216;
-  border-radius: 8px;
-  font-size: 12px;
-  overflow-wrap: anywhere;
-}
-.guess-cell.name { justify-content: flex-start; text-align: left; padding-left: 10px; font-weight: 800; }
-.guess-cell.correct { background: #185638; border-color: #267c4f; }
-.guess-cell.close { background: #6c5316; border-color: #9a7720; }
-.table-labels .guess-cell {
-  min-height: 34px;
-  background: transparent;
+  text-align: left;
   border: 0;
+  border-bottom: 1px solid #303030;
+  background: transparent;
+  padding: 11px 13px;
+  cursor: pointer;
+}
+
+.suggestion:last-child {
+  border-bottom: 0;
+}
+
+.suggestion:hover {
+  background: var(--orange-glow);
+}
+
+.suggestion-name {
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.suggestion-team {
   color: var(--muted);
   font-size: 10px;
-  text-transform: uppercase;
 }
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
+
+/* =========================================================
+   ATTRIBUTE COMPARISON
+   ========================================================= */
+
+.comparison-legend {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 15px 0;
 }
-.stat {
-  background: #111216;
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.legend-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 3px;
+}
+
+.legend-correct { background: var(--green); }
+.legend-close { background: var(--yellow); }
+.legend-wrong { background: var(--red); }
+
+.comparison-scroll {
+  overflow-x: auto;
   border: 1px solid var(--border);
   border-radius: 12px;
+}
+
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+  table-layout: fixed;
+}
+
+.comparison-table th {
+  padding: 12px 8px;
+  background: #151515;
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+}
+
+.comparison-table td {
+  padding: 9px 6px;
   text-align: center;
-  padding: 14px 6px;
+  border-bottom: 1px solid #303030;
 }
-.stat strong { display: block; font-size: 25px; }
-.stat span { font-size: 10px; color: var(--muted); text-transform: uppercase; }
-.word-grid {
-  display: grid;
-  gap: 7px;
-  width: min(100%, 330px);
-  margin: 20px auto;
+
+.comparison-table tbody tr:last-child td {
+  border-bottom: 0;
 }
-.word-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; }
-.letter {
-  aspect-ratio: 1;
-  border: 2px solid #383943;
-  border-radius: 7px;
+
+.comparison-table th:first-child,
+.comparison-table td:first-child {
+  text-align: left;
+  padding-left: 12px;
+  width: 155px;
+}
+
+.player-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.player-cell-name {
+  font-size: 11px;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.player-cell-meta {
+  font-size: 9px;
+  color: var(--muted);
+}
+
+.attribute-cell {
+  min-height: 51px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 3px;
+  padding: 8px 4px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.attribute-cell.correct {
+  color: var(--green);
+  background: var(--green-bg);
+  border-color: rgba(57,217,138,.22);
+}
+
+.attribute-cell.close {
+  color: var(--yellow);
+  background: var(--yellow-bg);
+  border-color: rgba(255,202,88,.2);
+}
+
+.attribute-cell.wrong {
+  color: var(--red);
+  background: var(--red-bg);
+  border-color: rgba(255,100,107,.17);
+}
+
+.attribute-cell .cell-arrow {
+  font-size: 12px;
+  line-height: 1;
+}
+
+.empty-state {
+  padding: 35px 18px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.empty-state .empty-icon {
+  font-size: 32px;
+  margin-bottom: 9px;
+}
+
+.empty-state strong {
+  display: block;
+  color: var(--text);
+  margin-bottom: 5px;
+}
+
+/* =========================================================
+   HINT CHALLENGE
+   ========================================================= */
+
+.hint-progress {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+.hint-progress span {
+  flex: 1;
+  height: 5px;
+  border-radius: 20px;
+  background: #363636;
+  transition: background .2s;
+}
+
+.hint-progress span.used {
+  background: var(--orange);
+}
+
+.hint-card {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #171717;
+  margin-bottom: 10px;
+  animation: clueIn .25s ease both;
+}
+
+@keyframes clueIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hint-number {
   display: grid;
   place-items: center;
-  font-size: clamp(17px, 5vw, 23px);
+  width: 35px;
+  height: 35px;
+  flex: 0 0 auto;
+  border-radius: 10px;
+  background: var(--orange-glow);
+  color: var(--orange);
+  font-weight: 900;
+}
+
+.hint-copy {
+  min-width: 0;
+}
+
+.hint-category {
+  margin-bottom: 4px;
+  color: var(--orange);
+  font-size: 9px;
   font-weight: 900;
   text-transform: uppercase;
-  background: #17181d;
+  letter-spacing: 1px;
 }
-.letter.filled { border-color: #858793; animation: pop .1s ease-out; }
-.letter.hit { background: #21804e; border-color: #21804e; }
-.letter.present { background: #a57a1c; border-color: #a57a1c; }
-.letter.miss { background: #393a43; border-color: #393a43; }
-@keyframes pop { from { transform: scale(.92); } to { transform: scale(1); } }
-.keyboard { display: grid; gap: 7px; margin: 16px auto; max-width: 510px; }
-.key-row { display: flex; justify-content: center; gap: 5px; }
-.key {
-  flex: 1;
-  max-width: 44px;
-  min-width: 0;
-  min-height: 46px;
-  border: 0;
-  border-radius: 7px;
-  background: #41434c;
-  color: white;
-  font-weight: 800;
-  padding: 5px 0;
+
+.hint-text {
+  font-size: 12px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
 }
-.key.wide { max-width: 75px; font-size: 11px; }
-.key.hit { background: #21804e; }
-.key.present { background: #a57a1c; }
-.key.miss { background: #292a31; color: #858793; }
-.hidden { display: none !important; }
-.divider { height: 1px; background: var(--border); margin: 18px 0; }
-footer { color: #777985; text-align: center; font-size: 12px; line-height: 1.7; padding: 15px 0 30px; }
-dialog {
-  max-width: min(500px, calc(100% - 25px));
-  color: var(--text);
-  background: #191a20;
+
+.hint-hidden {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px;
+  margin-bottom: 10px;
+  border: 1px dashed #444;
+  border-radius: 12px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.hint-hidden-number {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  border-radius: 9px;
+  background: #292929;
+  color: #aaa;
+  font-weight: 900;
+}
+
+/* =========================================================
+   SIDEBAR PANELS
+   ========================================================= */
+
+.side-card {
+  padding: 19px;
+  border-radius: 14px;
   border: 1px solid var(--border);
-  border-radius: 18px;
-  padding: 24px;
+  background: var(--panel);
 }
-dialog::backdrop { background: #000b; backdrop-filter: blur(4px); }
-dialog h2 { margin-top: 0; }
-dialog p, dialog li { color: #c1c2ca; line-height: 1.65; }
-@media (max-width: 600px) {
-  main { width: min(100% - 20px, 950px); margin-top: 18px; }
-  .header-inner { padding: 12px; }
-  .brand { font-size: 21px; }
-  .panel { padding: 15px; }
-  .mode-grid { grid-template-columns: 1fr; }
-  .mode-card { min-height: 140px; }
-  .clue-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .guess-row { grid-template-columns: minmax(78px, 1.2fr) repeat(4, minmax(0, 1fr)); gap: 3px; }
-  .guess-cell { font-size: 10px; padding: 5px 2px; min-height: 43px; }
-  .guess-cell.name { padding-left: 5px; }
-  .table-labels .guess-cell { font-size: 8px; }
-  .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .form-row { flex-direction: column; }
-  .key { min-height: 42px; font-size: 12px; }
+
+.side-card h3 {
+  margin: 0 0 13px;
+  font-family: "Barlow Condensed", Impact, sans-serif;
+  font-size: 21px;
+  text-transform: uppercase;
 }
+
+.side-stat-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid #303030;
+  font-size: 11px;
+}
+
+.side-stat-row:last-child {
+  border-bottom: 0;
+}
+
+.side-stat-row span {
+  color: var(--muted);
+}
+
+.side-stat-row strong {
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.tip-box {
+  padding: 14px;
+  border: 1px solid rgba(255,107,36,.2);
+  border-radius: 11px;
+  background: var(--orange-glow);
+}
+
+.tip-box strong {
+  display: block;
+  color: var(--orange);
+  font-size: 11px;
+  margin-bottom: 5px;
+}
+
+.tip-box p {
+  margin: 0;
+  color: #c6b8b1;
+  font-size: 10px;
+  line-height: 1.8;
+}
+
+.streak-track {
+  display: flex;
+  gap: 5px;
+  margin-top: 13px;
+}
+
+.streak-track span {
+  flex: 1;
+  height: 6px;
+  border-radius: 10px;
+  background: #353535;
+}
+
+.streak-track span.active {
+  background: var(--orange);
+}
+
+/* =========================================================
+   ROUND COMPLETE
+   ========================================================= */
+
+.result-banner {
+  padding: 20px;
+  margin-top: 18px;
+  border: 1px solid rgba(57,217,138,.28);
+  border-radius: 13px;
+  background: var(--green-bg);
+  animation: pageIn .3s ease both;
+}
+
+.result-banner.fail {
+  border-color: rgba(255,202,88,.25);
+  background: var(--yellow-bg);
+}
+
+.result-title {
+  font-family: "Barlow Condensed", Impact, sans-serif;
+  font-size: 27px;
+  text-transform: uppercase;
+  line-height: 1.1;
+}
+
+.result-description {
+  margin-top: 6px;
+  color: #c8c8c8;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 15px;
+}
+
+/* =========================================================
+   HISTORY AND STATISTICS
+   ========================================================= */
+
+.history-list {
+  display: grid;
+  gap: 9px;
+}
+
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  padding: 13px;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  background: #171717;
+}
+
+.history-name {
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.history-meta {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.history-result {
+  flex: 0 0 auto;
+  padding: 5px 8px;
+  border-radius: 7px;
+  font-size: 9px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.history-result.won {
+  color: var(--green);
+  background: var(--green-bg);
+}
+
+.history-result.lost {
+  color: var(--yellow);
+  background: var(--yellow-bg);
+}
+
+.stats-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.stats-detail-card {
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--panel);
+}
+
+.stats-detail-card .big-number {
+  margin: 9px 0;
+  font-family: "Barlow Condensed", Impact, sans-serif;
+  font-size: 43px;
+  line-height: 1;
+}
+
+.progress-bar {
+  height: 7px;
+  margin-top: 13px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: #373737;
+}
+
+.progress-bar span {
+  display: block;
+  height: 100%;
+  border-radius: 99px;
+  background: var(--orange);
+  transition: width .4s;
+}
+
+/* =========================================================
+   SETTINGS AND HELP
+   ========================================================= */
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.settings-card {
+  padding: 22px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--panel);
+}
+
+.settings-card h3 {
+  margin: 0 0 7px;
+  font-family: "Barlow Condensed", Impact, sans-serif;
+  font-size: 23px;
+  text-transform: uppercase;
+}
+
+.settings-card p {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.8;
+}
+
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 13px 0;
+  border-bottom: 1px solid #333;
+}
+
+.setting-row:last-child {
+  border-bottom: 0;
+}
+
+.setting-row strong {
+  display: block;
+  font-size: 12px;
+}
+
+.setting-row small {
+  display: block;
+  color: var(--muted);
+  margin-top: 3px;
+  font-size: 10px;
+}
+
+.toggle {
+  position: relative;
+  width: 43px;
+  height: 24px;
+  flex: 0 0 auto;
+  border: 0;
+  border-radius: 99px;
+  background: #444;
+  cursor: pointer;
+  transition: background .2s;
+}
+
+.toggle::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: white;
+  transition: transform .2s;
+}
+
+.toggle.on {
+  background: var(--orange);
+}
+
+.toggle.on::after {
+  transform: translateX(19px);
+  background: #171717;
+}
+
+.help-item {
+  padding: 17px 0;
+  border-bottom: 1px solid #333;
+}
+
+.help-item:last-child {
+  border-bottom: 0;
+}
+
+.help-item h4 {
+  margin: 0 0 6px;
+  font-size: 12px;
+}
+
+.help-item p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.8;
+}
+
+/* =========================================================
+   NOTIFICATIONS, LOADING, FOOTER
+   ========================================================= */
+
+.toast-area {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 100;
+  display: grid;
+  gap: 9px;
+  width: min(360px, calc(100vw - 40px));
+}
+
+.toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  background: #242424;
+  box-shadow: var(--shadow);
+  animation: toastIn .2s ease both;
+}
+
+.toast.success {
+  border-color: rgba(57,217,138,.35);
+}
+
+.toast.error {
+  border-color: rgba(255,100,107,.35);
+}
+
+.toast-icon {
+  font-size: 17px;
+}
+
+.toast-message {
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.loading-box {
+  padding: 28px 16px;
+  text-align: center;
+  color: var(--muted);
+}
+
+.spinner {
+  display: inline-block;
+  width: 25px;
+  height: 25px;
+  border: 3px solid #444;
+  border-top-color: var(--orange);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  margin-bottom: 12px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.footer {
+  padding: 24px 0 32px;
+  border-top: 1px solid #2a2a2a;
+  color: var(--subtle);
+  font-size: 10px;
+}
+
+.footer-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.footer-brand {
+  color: var(--orange);
+  font-family: "Barlow Condensed", Impact, sans-serif;
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.disclaimer {
+  margin-top: 8px;
+  line-height: 1.8;
+  max-width: 760px;
+}
+
+/* =========================================================
+   RESPONSIVE LAYOUT
+   ========================================================= */
+
+@media (max-width: 950px) {
+  .game-layout {
+    grid-template-columns: minmax(0, 1fr) 250px;
+  }
+
+  .hero {
+    padding: 35px;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .container {
+    width: min(100% - 24px, var(--max-width));
+  }
+
+  .nav {
+    min-height: 65px;
+    gap: 10px;
+  }
+
+  .brand-mark {
+    width: 36px;
+    height: 36px;
+    font-size: 23px;
+  }
+
+  .brand-name {
+    font-size: 24px;
+  }
+
+  .brand-caption {
+    font-size: 8px;
+  }
+
+  .nav-links {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 70;
+    display: flex;
+    justify-content: space-around;
+    padding: 8px 5px calc(8px + env(safe-area-inset-bottom));
+    background: rgba(18,18,18,.97);
+    backdrop-filter: blur(18px);
+    border-top: 1px solid var(--border);
+  }
+
+  .nav-link {
+    flex: 1;
+    padding: 9px 4px;
+    font-size: 10px;
+  }
+
+  .nav-right .status-pill {
+    display: none;
+  }
+
+  .page {
+    padding: 24px 0 95px;
+  }
+
+  .hero {
+    padding: 28px 22px;
+    min-height: auto;
+  }
+
+  .hero::after {
+    right: -8px;
+    font-size: 170px;
+    opacity: .6;
+  }
+
+  .hero::before {
+    width: 190px;
+    height: 190px;
+    right: -50px;
+    top: -20px;
+  }
+
+  .hero h1 {
+    font-size: clamp(51px, 15vw, 76px);
+  }
+
+  .hero p {
+    font-size: 12px;
+    max-width: 350px;
+  }
+
+  .hero-bottom {
+    gap: 12px;
+  }
+
+  .mode-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mode-card {
+    padding: 21px;
+  }
+
+  .game-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .game-sidebar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .game-panel {
+    padding: 17px;
+  }
+
+  .game-topline {
+    align-items: flex-start;
+  }
+
+  .stats-detail-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .section-block {
+    margin-top: 31px;
+  }
+}
+
+@media (max-width: 480px) {
+  .brand-caption {
+    letter-spacing: 1px;
+  }
+
+  .hero-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .hero-actions .btn {
+    width: 100%;
+  }
+
+  .hero-mini-stat {
+    font-size: 9px;
+  }
+
+  .stat-card {
+    padding: 14px;
+  }
+
+  .stat-value {
+    font-size: 32px;
+  }
+
+  .stat-label {
+    font-size: 10px;
+  }
+
+  .game-sidebar {
+    grid-template-columns: 1fr;
+  }
+
+  .guess-form {
+    flex-direction: column;
+  }
+
+  .guess-form .btn {
+    width: 100%;
+  }
+
+  .comparison-table {
+    min-width: 620px;
+  }
+
+  .stats-detail-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .stats-detail-card {
+    padding: 15px;
+  }
+
+  .stats-detail-card .big-number {
+    font-size: 35px;
+  }
+
+  .section-title-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .footer-inner {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
 }
 </style>
 </head>
 
 <body>
-<header>
-  <div class="header-inner">
-    <div class="brand">
-      <div class="brand-icon">🏀</div>
-      <div>BUZZER<small>THE NBA GUESSING GAME</small></div>
+
+<!-- =======================================================
+     TOP NAVIGATION
+     ======================================================= -->
+
+<header class="topbar">
+  <div class="container nav">
+    <div class="brand" role="button" tabindex="0"
+         onclick="showPage('home')"
+         onkeydown="if(event.key==='Enter')showPage('home')">
+      <div class="brand-mark">B</div>
+      <div>
+        <div class="brand-name">BUZZER</div>
+        <span class="brand-caption">THE NBA GUESSING GAME</span>
+      </div>
     </div>
-    <div class="header-status">
-      <span id="statusDot" class="status-dot"></span>
-      <span id="statusText">Loading roster…</span>
+
+    <nav class="nav-links" aria-label="Main navigation">
+      <button class="nav-link active" data-page="home"
+              onclick="showPage('home')">Home</button>
+      <button class="nav-link" data-page="player"
+              onclick="showPage('player')">Player Guess</button>
+      <button class="nav-link" data-page="hints"
+              onclick="showPage('hints')">Hint Challenge</button>
+      <button class="nav-link" data-page="stats"
+              onclick="showPage('stats')">Stats</button>
+      <button class="nav-link" data-page="settings"
+              onclick="showPage('settings')">Settings</button>
+    </nav>
+
+    <div class="nav-right">
+      <div class="status-pill">
+        <span class="status-dot" id="databaseDot"></span>
+        <span id="databaseStatus">LOADING ROSTER</span>
+      </div>
     </div>
   </div>
 </header>
 
-<main>
-  <section id="homeScreen">
-    <div class="hero">
-      <div class="eyebrow">Your court. Your call.</div>
-      <h1>BUZ<span>ZER.</span></h1>
-      <p>Test your NBA knowledge. Identify the player, crack the word, and build your streak.</p>
+<main class="container">
+
+<!-- =======================================================
+     HOME PAGE
+     ======================================================= -->
+
+<section class="page active" id="page-home">
+
+  <div class="hero">
+    <div class="hero-content">
+      <div class="eyebrow">YOUR COURT. YOUR KNOWLEDGE.</div>
+
+      <h1>GUESS THE<br><span>GREATNESS.</span></h1>
+
+      <p>
+        Think you know the NBA? Identify players, decode clues,
+        compare stats, and prove your basketball knowledge.
+        Every round is a new challenge.
+      </p>
+
+      <div class="hero-actions">
+        <button class="btn btn-primary" onclick="startPlayerGame()">
+          <span>▶</span> PLAY PLAYER GUESS
+        </button>
+
+        <button class="btn btn-secondary" onclick="startHintGame()">
+          <span>✦</span> TRY HINT CHALLENGE
+        </button>
+      </div>
+
+      <div class="hero-bottom">
+        <div class="hero-mini-stat">
+          <span class="orange">●</span>
+          <strong id="heroPlayerCount">—</strong> players loaded
+        </div>
+        <div class="hero-mini-stat">
+          <span class="orange">∞</span>
+          Unlimited name guesses
+        </div>
+        <div class="hero-mini-stat">
+          <span class="orange">✓</span>
+          <strong>2</strong> game modes
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="section-title-row">
+      <div>
+        <div class="eyebrow">YOUR PERFORMANCE</div>
+        <h2 class="section-heading">THE NUMBERS</h2>
+        <p class="section-subtitle">Your personal BUZZER record on this device.</p>
+      </div>
+
+      <button class="btn btn-secondary btn-small"
+              onclick="showPage('stats')">FULL STATS ↗</button>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-top">
+          <span class="stat-label">GAMES PLAYED</span>
+          <span class="icon">▤</span>
+        </div>
+        <div class="stat-value" id="homeGames">0</div>
+        <div class="stat-note">Across all game modes</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-top">
+          <span class="stat-label">WIN RATE</span>
+          <span class="icon">%</span>
+        </div>
+        <div class="stat-value" id="homeWinRate">0%</div>
+        <div class="stat-note">Rounds successfully completed</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-top">
+          <span class="stat-label">CURRENT STREAK</span>
+          <span class="icon">🔥</span>
+        </div>
+        <div class="stat-value" id="homeStreak">0</div>
+        <div class="stat-note">Consecutive round wins</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-top">
+          <span class="stat-label">BEST STREAK</span>
+          <span class="icon">★</span>
+        </div>
+        <div class="stat-value" id="homeBestStreak">0</div>
+        <div class="stat-note">Your personal record</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="section-title-row">
+      <div>
+        <div class="eyebrow">CHOOSE YOUR CHALLENGE</div>
+        <h2 class="section-heading">PICK A MODE</h2>
+        <p class="section-subtitle">Two different ways to prove you know the league.</p>
+      </div>
     </div>
 
     <div class="mode-grid">
-      <button class="mode-card" onclick="openPlayerGame()">
-        <div class="mode-emoji">🕵️</div>
-        <h2>Guess the Player</h2>
-        <p>Use clues and compare players until you identify the mystery NBA player.</p>
+
+      <button class="mode-card" data-number="01"
+              onclick="startPlayerGame()">
+        <div class="mode-card-top">
+          <div class="mode-icon">🏀</div>
+          <span class="mode-tag">UNLIMITED GUESSES</span>
+        </div>
+
+        <h3>Player Guess</h3>
+
+        <p>
+          Enter an NBA player's full name. Every guess reveals
+          how their team, division, jersey number, age, height,
+          and position compare with the mystery player.
+        </p>
+
+        <div class="mode-footer">
+          <span>Compare the attributes</span>
+          <span>→</span>
+        </div>
       </button>
-      <button class="mode-card" onclick="openWordGame()">
-        <div class="mode-emoji">🔤</div>
-        <h2>NBA Wordle</h2>
-        <p>Guess a five-letter basketball word in six tries. A new puzzle every day.</p>
+
+      <button class="mode-card" data-number="02"
+              onclick="startHintGame()">
+        <div class="mode-card-top">
+          <div class="mode-icon">🧩</div>
+          <span class="mode-tag">CLUE BY CLUE</span>
+        </div>
+
+        <h3>Hint Challenge</h3>
+
+        <p>
+          Reveal clues one at a time, from basketball details
+          to player information. Connect the clues and guess
+          the mystery NBA player.
+        </p>
+
+        <div class="mode-footer">
+          <span>Decode the clues</span>
+          <span>→</span>
+        </div>
+      </button>
+
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="section-title-row">
+      <div>
+        <div class="eyebrow">RECENT ACTIVITY</div>
+        <h2 class="section-heading">LAST ROUNDS</h2>
+      </div>
+    </div>
+
+    <div class="card" style="padding:18px">
+      <div id="homeHistory" class="history-list"></div>
+    </div>
+  </div>
+</section>
+
+<!-- =======================================================
+     PLAYER GUESS PAGE
+     ======================================================= -->
+
+<section class="page" id="page-player">
+
+  <div class="game-topline">
+    <div>
+      <button class="back-button" onclick="showPage('home')">← BACK TO HOME</button>
+      <div class="eyebrow">MODE 01 / ATTRIBUTE COMPARISON</div>
+      <h1 class="game-title">PLAYER <span class="orange">GUESS</span></h1>
+    </div>
+
+    <button class="btn btn-secondary btn-small" onclick="confirmNewRound('player')">
+      ↻ NEW ROUND
+    </button>
+  </div>
+
+  <div class="game-layout">
+    <div class="game-main">
+
+      <div class="game-panel">
+        <div class="panel-heading">
+          <h3>Who is the player?</h3>
+          <span class="round-label" id="playerRoundLabel">ROUND 1</span>
+        </div>
+
+        <p class="panel-description">
+          Type a player's full name. Each guess compares six attributes.
+          Keep guessing until you identify the mystery player.
+        </p>
+
+        <form class="guess-form" id="playerGuessForm" autocomplete="off">
+          <div class="input-wrap">
+            <input class="text-input" id="playerGuessInput"
+                   type="text" maxlength="100"
+                   placeholder="Enter an NBA player's name..."
+                   aria-label="Enter an NBA player's name"
+                   aria-autocomplete="list">
+            <div class="suggestions hidden" id="playerSuggestions"></div>
+          </div>
+
+          <button class="btn btn-primary" id="playerGuessButton" type="submit">
+            SUBMIT GUESS
+          </button>
+        </form>
+
+        <div class="input-caption">
+          Names are case-insensitive. Autocomplete can help you find the correct spelling.
+        </div>
+
+        <div class="comparison-legend">
+          <span class="legend-item">
+            <span class="legend-dot legend-correct"></span> Exact match
+          </span>
+          <span class="legend-item">
+            <span class="legend-dot legend-close"></span> Close / same division
+          </span>
+          <span class="legend-item">
+            <span class="legend-dot legend-wrong"></span> Not a match
+          </span>
+        </div>
+      </div>
+
+      <div class="section-block" style="margin-top:20px">
+        <div class="section-title-row">
+          <div>
+            <h2 class="section-heading">YOUR GUESSES</h2>
+            <p class="section-subtitle" id="playerGuessCount">
+              No guesses yet. Make your first move.
+            </p>
+          </div>
+        </div>
+
+        <div class="card" style="padding:14px">
+          <div id="comparisonContainer">
+            <div class="empty-state">
+              <div class="empty-icon">🏀</div>
+              <strong>The court is yours.</strong>
+              Submit a player name to start comparing attributes.
+            </div>
+          </div>
+        </div>
+
+        <div id="playerResult"></div>
+      </div>
+
+    </div>
+
+    <aside class="game-sidebar">
+
+      <div class="side-card">
+        <h3>Round Stats</h3>
+        <div class="side-stat-row">
+          <span>Guesses used</span>
+          <strong id="playerAttempts">0</strong>
+        </div>
+        <div class="side-stat-row">
+          <span>Players available</span>
+          <strong id="playerPoolCount">—</strong>
+        </div>
+        <div class="side-stat-row">
+          <span>Round status</span>
+          <strong id="playerRoundStatus">In progress</strong>
+        </div>
+        <div class="side-stat-row">
+          <span>Mode</span>
+          <strong>Unlimited</strong>
+        </div>
+      </div>
+
+      <div class="side-card">
+        <h3>Attribute Guide</h3>
+        <div class="side-stat-row">
+          <span>Team</span>
+          <strong>NBA team</strong>
+        </div>
+        <div class="side-stat-row">
+          <span>Division</span>
+          <strong>NBA division</strong>
+        </div>
+        <div class="side-stat-row">
+          <span>Jersey</span>
+          <strong>Shirt number</strong>
+        </div>
+        <div class="side-stat-row">
+          <span>Age</span>
+          <strong>Approx. age</strong>
+        </div>
+        <div class="side-stat-row">
+          <span>Height</span>
+          <strong>Feet and inches</strong>
+        </div>
+        <div class="side-stat-row">
+          <span>Position</span>
+          <strong>Basketball position</strong>
+        </div>
+      </div>
+
+      <div class="tip-box">
+        <strong>🏆 THE STRATEGY</strong>
+        <p>
+          Use each result to narrow down the possibilities.
+          A yellow number means you're close; the direction arrow
+          helps you determine whether the mystery player's value is higher or lower.
+        </p>
+      </div>
+
+    </aside>
+  </div>
+</section>
+
+<!-- =======================================================
+     HINT CHALLENGE PAGE
+     ======================================================= -->
+
+<section class="page" id="page-hints">
+
+  <div class="game-topline">
+    <div>
+      <button class="back-button" onclick="showPage('home')">← BACK TO HOME</button>
+      <div class="eyebrow">MODE 02 / PROGRESSIVE CLUES</div>
+      <h1 class="game-title">HINT <span class="orange">CHALLENGE</span></h1>
+    </div>
+
+    <button class="btn btn-secondary btn-small" onclick="confirmNewRound('hints')">
+      ↻ NEW ROUND
+    </button>
+  </div>
+
+  <div class="game-layout">
+    <div class="game-main">
+
+      <div class="game-panel">
+        <div class="panel-heading">
+          <h3>Decode the player</h3>
+          <span class="round-label" id="hintRoundLabel">ROUND 1</span>
+        </div>
+
+        <p class="panel-description">
+          Start with the first clue. Reveal more clues whenever you need them.
+          The mystery player's name stays hidden until you guess correctly
+          or finish the round.
+        </p>
+
+        <div class="hint-progress" id="hintProgress"></div>
+
+        <div id="hintList"></div>
+
+        <div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:16px">
+          <button class="btn btn-secondary" id="revealHintButton"
+                  onclick="revealNextHint()">＋ REVEAL NEXT CLUE</button>
+          <span class="muted" style="align-self:center;font-size:10px"
+                id="hintsRemaining"></span>
+        </div>
+      </div>
+
+      <div class="game-panel" style="margin-top:18px">
+        <div class="panel-heading">
+          <h3>Make your guess</h3>
+          <span class="round-label" id="hintAttemptsLabel">0 GUESSES</span>
+        </div>
+
+        <form class="guess-form" id="hintGuessForm" autocomplete="off">
+          <div class="input-wrap">
+            <input class="text-input" id="hintGuessInput"
+                   type="text" maxlength="100"
+                   placeholder="Which NBA player is it?"
+                   aria-label="Guess the NBA player">
+            <div class="suggestions hidden" id="hintSuggestions"></div>
+          </div>
+
+          <button class="btn btn-primary" id="hintGuessButton" type="submit">
+            LOCK IN GUESS
+          </button>
+        </form>
+
+        <div class="input-caption">
+          Your guesses do not need to be five letters long. Enter the player's name.
+        </div>
+
+        <div id="hintFeedback" style="margin-top:15px"></div>
+        <div id="hintResult"></div>
+      </div>
+
+    </div>
+
+    <aside class="game-sidebar">
+      <div class="side-card">
+        <h3>Challenge Stats</h3>
+        <div class="side-stat-row">
+          <span>Guesses</span>
+          <strong id="hintAttempts">0</strong>
+        </div>
+        <div class="side-stat-row">
+          <span>Clues revealed</span>
+          <strong id="hintCluesUsed">1</strong>
+        </div>
+        <div class="side-stat-row">
+          <span>Clues remaining</span>
+          <strong id="hintCluesLeft">5</strong>
+        </div>
+        <div class="side-stat-row">
+          <span>Round status</span>
+          <strong id="hintRoundStatus">In progress</strong>
+        </div>
+      </div>
+
+      <div class="side-card">
+        <h3>Scoring</h3>
+        <div class="side-stat-row">
+          <span>Guess before clues</span>
+          <strong class="green-text">Best score</strong>
+        </div>
+        <div class="side-stat-row">
+          <span>Reveal a clue</span>
+          <strong class="yellow-text">Less mystery</strong>
+        </div>
+        <div class="side-stat-row">
+          <span>Correct answer</span>
+          <strong class="green-text">Round won</strong>
+        </div>
+        <div class="side-stat-row">
+          <span>Give up</span>
+          <strong class="red-text">Round lost</strong>
+        </div>
+      </div>
+
+      <div class="tip-box">
+        <strong>🧠 THINK LIKE A SCOUT</strong>
+        <p>
+          Combine every clue instead of relying on just one.
+          Position, team, height, and other details can help you
+          identify a player from the roster.
+        </p>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- =======================================================
+     STATISTICS PAGE
+     ======================================================= -->
+
+<section class="page" id="page-stats">
+
+  <div class="eyebrow">YOUR BUZZER PROFILE</div>
+  <h1 class="game-title">PLAYER <span class="orange">STATS</span></h1>
+  <p class="section-subtitle" style="margin-bottom:24px">
+    Track your results, your streaks, and your progress.
+  </p>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">TOTAL GAMES</div>
+      <div class="stat-value" id="statsGames">0</div>
+      <div class="stat-note">Completed rounds</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-label">ROUNDS WON</div>
+      <div class="stat-value green-text" id="statsWins">0</div>
+      <div class="stat-note">Correct identifications</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-label">WIN RATE</div>
+      <div class="stat-value" id="statsRate">0%</div>
+      <div class="stat-note">Wins divided by completed games</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-label">BEST STREAK</div>
+      <div class="stat-value" id="statsBest">0</div>
+      <div class="stat-note">Most consecutive wins</div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="section-title-row">
+      <div>
+        <h2 class="section-heading">MODE BREAKDOWN</h2>
+        <p class="section-subtitle">See which mode you perform best in.</p>
+      </div>
+    </div>
+
+    <div class="stats-detail-grid">
+      <div class="stats-detail-card">
+        <div class="eyebrow">PLAYER GUESS</div>
+        <div class="big-number" id="statsPlayerWins">0</div>
+        <div class="muted" style="font-size:11px" id="statsPlayerGames">0 rounds played</div>
+        <div class="progress-bar"><span id="statsPlayerBar" style="width:0%"></span></div>
+      </div>
+
+      <div class="stats-detail-card">
+        <div class="eyebrow">HINT CHALLENGE</div>
+        <div class="big-number" id="statsHintWins">0</div>
+        <div class="muted" style="font-size:11px" id="statsHintGames">0 rounds played</div>
+        <div class="progress-bar"><span id="statsHintBar" style="width:0%"></span></div>
+      </div>
+
+      <div class="stats-detail-card">
+        <div class="eyebrow">AVERAGE GUESSES</div>
+        <div class="big-number" id="statsAverage">0</div>
+        <div class="muted" style="font-size:11px">Per completed round</div>
+        <div class="progress-bar"><span id="statsAverageBar" style="width:0%"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="section-title-row">
+      <div>
+        <h2 class="section-heading">GAME HISTORY</h2>
+        <p class="section-subtitle">Your most recent completed rounds.</p>
+      </div>
+
+      <button class="btn btn-secondary btn-small" onclick="clearHistory()">
+        CLEAR HISTORY
       </button>
     </div>
 
-    <section class="panel" style="margin-top:18px">
-      <div class="section-heading">
-        <h2>📊 Your career stats</h2>
-        <button class="btn secondary" onclick="showHelp()">How to play</button>
-      </div>
-      <div class="stats-grid">
-        <div class="stat"><strong id="statPlayed">0</strong><span>Played</span></div>
-        <div class="stat"><strong id="statWins">0</strong><span>Wins</span></div>
-        <div class="stat"><strong id="statRate">0%</strong><span>Win rate</span></div>
-        <div class="stat"><strong id="statStreak">0</strong><span>Streak</span></div>
-      </div>
-    </section>
+    <div class="card" style="padding:18px">
+      <div id="fullHistory" class="history-list"></div>
+    </div>
+  </div>
+</section>
 
-    <section class="panel">
-      <div class="section-heading">
-        <h2>🔥 Daily challenge</h2>
-        <span class="eyebrow">Every day</span>
+<!-- =======================================================
+     SETTINGS PAGE
+     ======================================================= -->
+
+<section class="page" id="page-settings">
+
+  <div class="eyebrow">MAKE IT YOURS</div>
+  <h1 class="game-title">GAME <span class="orange">SETTINGS</span></h1>
+  <p class="section-subtitle" style="margin-bottom:24px">
+    Manage your preferences and your locally saved game data.
+  </p>
+
+  <div class="settings-grid">
+
+    <div class="settings-card">
+      <h3>Gameplay</h3>
+      <p>Control how BUZZER behaves while you play.</p>
+
+      <div class="setting-row">
+        <div>
+          <strong>Autocomplete</strong>
+          <small>Show matching player names as you type.</small>
+        </div>
+        <button class="toggle on" id="toggleAutocomplete"
+                aria-label="Toggle autocomplete"
+                onclick="toggleSetting('autocomplete')"></button>
       </div>
-      <p class="muted" style="line-height:1.6;margin-bottom:0">
-        Play both modes and see how well you know the league. Your progress is saved in this browser.
+
+      <div class="setting-row">
+        <div>
+          <strong>Confirm new round</strong>
+          <small>Ask before replacing an active round.</small>
+        </div>
+        <button class="toggle on" id="toggleConfirm"
+                aria-label="Toggle new round confirmation"
+                onclick="toggleSetting('confirmNewRound')"></button>
+      </div>
+
+      <div class="setting-row">
+        <div>
+          <strong>Show hint feedback</strong>
+          <small>Display feedback after each guess.</small>
+        </div>
+        <button class="toggle on" id="toggleFeedback"
+                aria-label="Toggle hint feedback"
+                onclick="toggleSetting('hintFeedback')"></button>
+      </div>
+    </div>
+
+    <div class="settings-card">
+      <h3>Player Database</h3>
+      <p>
+        BUZZER loads roster information from a public data source.
+        The available players depend on that source and its current data.
       </p>
-    </section>
-  </section>
 
-  <section id="playerScreen" class="hidden">
-    <div class="section-heading">
-      <div>
-        <div class="eyebrow">Game mode 01</div>
-        <h2 style="font-size:28px;margin:6px 0">Guess the Player</h2>
+      <div class="side-stat-row">
+        <span>Database status</span>
+        <strong id="settingsDatabaseStatus">Loading</strong>
       </div>
-      <button class="btn secondary" onclick="goHome()">← Menu</button>
+
+      <div class="side-stat-row">
+        <span>Loaded players</span>
+        <strong id="settingsPlayerCount">—</strong>
+      </div>
+
+      <div class="side-stat-row">
+        <span>Loaded teams</span>
+        <strong id="settingsTeamCount">—</strong>
+      </div>
+
+      <button class="btn btn-secondary btn-full" style="margin-top:16px"
+              onclick="loadRoster(true)">↻ REFRESH ROSTER</button>
     </div>
 
-    <div class="panel">
-      <div class="section-heading">
-        <div>
-          <strong>Mystery player</strong>
-          <div class="muted small" id="playerRoundText">Daily challenge</div>
-        </div>
-        <span class="eyebrow" id="attemptCounter">0 guesses</span>
+    <div class="settings-card">
+      <h3>Your Data</h3>
+      <p>
+        Game stats and history are stored in this browser on this device.
+        Clearing browser storage may remove them.
+      </p>
+
+      <div class="side-stat-row">
+        <span>Completed rounds</span>
+        <strong id="settingsCompletedGames">0</strong>
       </div>
 
-      <div class="clue-grid">
-        <div class="clue"><span>Conference</span><strong id="clueConference">???</strong></div>
-        <div class="clue"><span>Position</span><strong id="cluePosition">???</strong></div>
-        <div class="clue"><span>Height</span><strong id="clueHeight">???</strong></div>
-        <div class="clue"><span>Age</span><strong id="clueAge">???</strong></div>
-        <div class="clue"><span>Team</span><strong id="clueTeam">???</strong></div>
-        <div class="clue"><span>Jersey</span><strong id="clueJersey">???</strong></div>
+      <div class="side-stat-row">
+        <span>Saved history entries</span>
+        <strong id="settingsHistoryCount">0</strong>
       </div>
-      <p class="muted small" style="margin-bottom:0">Use hints to reveal more information. A green cell is a match; a yellow cell is close.</p>
+
+      <button class="btn btn-danger btn-full" style="margin-top:16px"
+              onclick="resetAllStats()">RESET ALL STATS</button>
     </div>
 
-    <div class="panel">
-      <label for="playerInput">Enter an NBA player</label>
-      <form id="playerForm" class="form-row">
-        <input id="playerInput" list="playerOptions" placeholder="e.g. Stephen Curry" autocomplete="off" required>
-        <datalist id="playerOptions"></datalist>
-        <button class="btn" type="submit" id="guessButton">Guess</button>
-      </form>
-      <div class="btn-row" style="margin-top:12px">
-        <button class="btn secondary" id="hintButton" onclick="revealHint()">💡 Reveal a hint</button>
-        <button class="btn secondary" onclick="revealAnswer()">Reveal answer</button>
-        <button class="btn secondary" onclick="resetPlayerGame()">New game</button>
+    <div class="settings-card">
+      <h3>About BUZZER</h3>
+      <p>
+        A fan-made basketball guessing game. BUZZER is not affiliated
+        with the NBA or any NBA team.
+      </p>
+
+      <div class="help-item">
+        <h4>Player Guess</h4>
+        <p>Identify a hidden player by comparing roster attributes after each guess.</p>
       </div>
-      <div id="playerMessage" class="message"></div>
+
+      <div class="help-item">
+        <h4>Hint Challenge</h4>
+        <p>Reveal clues gradually and identify the player before using every clue.</p>
+      </div>
+
+      <div class="help-item">
+        <h4>Need help?</h4>
+        <p>If the roster cannot load, check your internet connection and try refreshing it.</p>
+      </div>
     </div>
 
-    <div class="panel">
-      <div class="section-heading">
-        <h2>Your guesses</h2>
-        <span class="muted small">Closest match wins</span>
-      </div>
-      <div class="guess-row table-labels">
-        <div class="guess-cell">Player</div>
-        <div class="guess-cell">Team</div>
-        <div class="guess-cell">Position</div>
-        <div class="guess-cell">Height</div>
-        <div class="guess-cell">Age</div>
-      </div>
-      <div id="guessList" class="guess-list"></div>
-      <p id="emptyGuesses" class="muted small">Your guesses will appear here.</p>
-    </div>
-  </section>
+  </div>
+</section>
 
-  <section id="wordScreen" class="hidden">
-    <div class="section-heading">
-      <div>
-        <div class="eyebrow">Game mode 02</div>
-        <h2 style="font-size:28px;margin:6px 0">NBA Wordle</h2>
-      </div>
-      <button class="btn secondary" onclick="goHome()">← Menu</button>
-    </div>
-    <div class="panel">
-      <div class="section-heading">
-        <div>
-          <strong>Crack the word</strong>
-          <div class="muted small">Six tries · Five letters</div>
-        </div>
-        <button class="btn secondary" onclick="showHelp()">Rules</button>
-      </div>
-      <div id="wordGrid" class="word-grid" aria-label="Word puzzle"></div>
-      <div id="keyboard" class="keyboard"></div>
-      <div id="wordMessage" class="message"></div>
-      <div class="btn-row" style="justify-content:center;margin-top:12px">
-        <button class="btn secondary" onclick="resetWordGame()">Restart today's puzzle</button>
-        <button class="btn secondary" onclick="shareResult()">Share result</button>
-      </div>
-      <p class="muted small" style="text-align:center;margin-bottom:0">Green = correct spot · Yellow = in the word · Grey = not in the word</p>
-    </div>
-  </section>
-
-  <footer>
-    BUZZER is a fan-made guessing game and is not affiliated with the NBA.<br>
-    Player data depends on the external community roster source.
-  </footer>
 </main>
 
-<dialog id="helpDialog">
-  <h2>🏀 How to play</h2>
-  <p><strong>Guess the Player:</strong> Pick a player from the roster. Compare their team, position, height, and age with the mystery player. Use hints if you get stuck.</p>
-  <p><strong>NBA Wordle:</strong> Guess the five-letter basketball word in six tries. Green letters are in the right place, yellow letters belong somewhere else, and grey letters are not in the word.</p>
-  <p><strong>Your stats:</strong> Your stats and daily progress are stored in this browser. Clearing browser data can erase them.</p>
-  <p><strong>Roster note:</strong> The game loads data from a community-maintained roster. It may not match every current NBA signing or roster move.</p>
-  <button class="btn full" onclick="document.getElementById('helpDialog').close()">Got it</button>
-</dialog>
+<!-- =======================================================
+     FOOTER
+     ======================================================= -->
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <div>
+      <div class="footer-brand">BUZZER.</div>
+      <div>Know the game. Know the players.</div>
+    </div>
+
+    <div style="max-width:600px">
+      <div>Fan-made NBA guessing game.</div>
+      <div class="disclaimer">
+        BUZZER is an unofficial fan project and is not affiliated with,
+        endorsed by, or sponsored by the National Basketball Association
+        or its teams. Player information depends on the roster data source
+        and may not always reflect the latest transactions.
+      </div>
+    </div>
+  </div>
+</footer>
+
+<div class="toast-area" id="toastArea" aria-live="polite"></div>
 
 <script>
+/* =========================================================
+   BUZZER APPLICATION
+   Main game logic, state, roster data, scoring and rendering
+   ========================================================= */
+
 "use strict";
 
-/* ---------------------------
-   CONFIGURATION
----------------------------- */
+/* =========================================================
+   1. CONSTANTS AND CONFIGURATION
+   ========================================================= */
 
-const ROSTER_URL =
-  "https://raw.githubusercontent.com/A-V29/NBA.Rosters/refs/heads/main/2026-27.NBA.Roster.json";
+const APP_VERSION = "2.0.0";
 
-const WORDS = [
-  "dunks", "court", "coach", "shots", "shoot",
-  "guard", "score", "hoops", "steal", "block",
-  "pivot", "drive", "swish", "teams", "clutch",
-  "press", "plays", "bench", "draft", "camps"
+const ROSTER_URLS = [
+  "https://raw.githubusercontent.com/A-V29/NBA.Rosters/refs/heads/main/2026-27.NBA.Roster.json"
 ];
 
-const MAX_PLAYER_GUESSES = 8;
-const MAX_WORD_GUESSES = 6;
-const PLAYER_DAILY_KEY = "buzzer_player_daily_v2";
-const WORD_DAILY_KEY = "buzzer_word_daily_v2";
-const STATS_KEY = "buzzer_stats_v2";
+const DIVISION_NAMES = {
+  0: "Atlantic",
+  1: "Central",
+  2: "Southeast",
+  3: "Northwest",
+  4: "Pacific",
+  5: "Southwest"
+};
+
+const TEAM_DIVISION_FALLBACK = {
+  "Boston Celtics": "Atlantic",
+  "Brooklyn Nets": "Atlantic",
+  "New York Knicks": "Atlantic",
+  "Philadelphia 76ers": "Atlantic",
+  "Toronto Raptors": "Atlantic",
+
+  "Chicago Bulls": "Central",
+  "Cleveland Cavaliers": "Central",
+  "Detroit Pistons": "Central",
+  "Indiana Pacers": "Central",
+  "Milwaukee Bucks": "Central",
+
+  "Atlanta Hawks": "Southeast",
+  "Charlotte Hornets": "Southeast",
+  "Miami Heat": "Southeast",
+  "Orlando Magic": "Southeast",
+  "Washington Wizards": "Southeast",
+
+  "Denver Nuggets": "Northwest",
+  "Minnesota Timberwolves": "Northwest",
+  "Oklahoma City Thunder": "Northwest",
+  "Portland Trail Blazers": "Northwest",
+  "Utah Jazz": "Northwest",
+
+  "Golden State Warriors": "Pacific",
+  "LA Clippers": "Pacific",
+  "Los Angeles Clippers": "Pacific",
+  "Los Angeles Lakers": "Pacific",
+  "Phoenix Suns": "Pacific",
+  "Sacramento Kings": "Pacific",
+
+  "Dallas Mavericks": "Southwest",
+  "Houston Rockets": "Southwest",
+  "Memphis Grizzlies": "Southwest",
+  "New Orleans Pelicans": "Southwest",
+  "San Antonio Spurs": "Southwest"
+};
+
+const DIVISION_TEAM_NAMES = {
+  "Atlantic": [
+    "Boston Celtics", "Brooklyn Nets", "New York Knicks",
+    "Philadelphia 76ers", "Toronto Raptors"
+  ],
+  "Central": [
+    "Chicago Bulls", "Cleveland Cavaliers", "Detroit Pistons",
+    "Indiana Pacers", "Milwaukee Bucks"
+  ],
+  "Southeast": [
+    "Atlanta Hawks", "Charlotte Hornets", "Miami Heat",
+    "Orlando Magic", "Washington Wizards"
+  ],
+  "Northwest": [
+    "Denver Nuggets", "Minnesota Timberwolves", "Oklahoma City Thunder",
+    "Portland Trail Blazers", "Utah Jazz"
+  ],
+  "Pacific": [
+    "Golden State Warriors", "LA Clippers", "Los Angeles Clippers",
+    "Los Angeles Lakers", "Phoenix Suns", "Sacramento Kings"
+  ],
+  "Southwest": [
+    "Dallas Mavericks", "Houston Rockets", "Memphis Grizzlies",
+    "New Orleans Pelicans", "San Antonio Spurs"
+  ]
+};
+
+const DEFAULT_SETTINGS = {
+  autocomplete: true,
+  confirmNewRound: true,
+  hintFeedback: true
+};
+
+const STORAGE_KEYS = {
+  stats: "buzzer_stats_v2",
+  history: "buzzer_history_v2",
+  settings: "buzzer_settings_v2",
+  cache: "buzzer_roster_cache_v2"
+};
+
+/* =========================================================
+   2. GLOBAL APPLICATION STATE
+   ========================================================= */
 
 let players = [];
-let teamsById = {};
-let mysteryPlayer = null;
-let playerGuesses = [];
-let playerFinished = false;
-let hintsUsed = 0;
+let teamsById = new Map();
+let teamsByName = new Map();
 
-let targetWord = "";
-let wordGuesses = [];
-let currentWord = "";
-let wordFinished = false;
-let wordKeyboardStatus = {};
-let lastShareText = "";
+let rosterReady = false;
+let rosterLoading = false;
+let rosterError = "";
+let activePage = "home";
 
-/* ---------------------------
-   GENERAL HELPERS
----------------------------- */
+let playerGame = createEmptyGame("player");
+let hintGame = createEmptyGame("hints");
+
+let playerRoundNumber = 1;
+let hintRoundNumber = 1;
+
+let stats = loadStoredObject(STORAGE_KEYS.stats, {
+  games: 0,
+  wins: 0,
+  losses: 0,
+  currentStreak: 0,
+  bestStreak: 0,
+  totalGuesses: 0,
+  playerGames: 0,
+  playerWins: 0,
+  hintGames: 0,
+  hintWins: 0
+});
+
+let history = loadStoredObject(STORAGE_KEYS.history, []);
+let settings = {
+  ...DEFAULT_SETTINGS,
+  ...loadStoredObject(STORAGE_KEYS.settings, {})
+};
+
+/* =========================================================
+   3. SAFE STORAGE HELPERS
+   ========================================================= */
+
+function loadStoredObject(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return structuredCloneSafe(fallback);
+
+    const parsed = JSON.parse(raw);
+
+    if (
+      fallback &&
+      typeof fallback === "object" &&
+      !Array.isArray(fallback) &&
+      parsed &&
+      typeof parsed === "object" &&
+      !Array.isArray(parsed)
+    ) {
+      return { ...fallback, ...parsed };
+    }
+
+    if (Array.isArray(fallback) && Array.isArray(parsed)) {
+      return parsed;
+    }
+
+    return parsed;
+  } catch (error) {
+    console.warn("BUZZER storage read failed:", error);
+    return structuredCloneSafe(fallback);
+  }
+}
+
+function structuredCloneSafe(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function saveStoredObject(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+    return true;
+  } catch (error) {
+    console.warn("BUZZER storage write failed:", error);
+    return false;
+  }
+}
+
+function saveAllStats() {
+  saveStoredObject(STORAGE_KEYS.stats, stats);
+  saveStoredObject(STORAGE_KEYS.history, history);
+  saveStoredObject(STORAGE_KEYS.settings, settings);
+}
+
+/* =========================================================
+   4. SMALL UTILITIES
+   ========================================================= */
 
 function $(id) {
   return document.getElementById(id);
 }
 
-function todayKey() {
-  return new Date().toISOString().slice(0, 10);
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
 }
 
-function seededNumber(text) {
-  let h = 2166136261;
-  for (let i = 0; i < text.length; i++) {
-    h ^= text.charCodeAt(i);
-    h = Math.imul(h, 16777619);
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, character => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;"
+  })[character]);
+}
+
+function normalizeName(value) {
+  return String(value ?? "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]/g, "");
+}
+
+function shuffle(array) {
+  const copy = [...array];
+
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
   }
-  return h >>> 0;
+
+  return copy;
 }
 
-function dailyPick(list, key) {
-  if (!list.length) return null;
-  return list[seededNumber(key) % list.length];
+function randomItem(array) {
+  if (!array.length) return null;
+  return array[Math.floor(Math.random() * array.length)];
 }
 
-function safeRead(key, fallback) {
+function plural(number, singular, pluralForm = singular + "s") {
+  return number === 1 ? singular : pluralForm;
+}
+
+function formatHeight(inches) {
+  if (!Number.isFinite(inches) || inches <= 0) return "Unknown";
+
+  const feet = Math.floor(inches / 12);
+  const remainingInches = Math.round(inches % 12);
+
+  return `${feet}'${remainingInches}"`;
+}
+
+function formatDate(timestamp) {
   try {
-    const value = localStorage.getItem(key);
-    return value ? JSON.parse(value) : fallback;
+    return new Date(timestamp).toLocaleDateString(undefined, {
+      month: "short",
+      day: "numeric",
+      year: "numeric"
+    });
   } catch {
-    return fallback;
+    return "Unknown date";
   }
 }
 
-function safeWrite(key, value) {
-  try {
-    localStorage.setItem(key, JSON.stringify(value));
-  } catch (error) {
-    console.warn("Could not save game progress:", error);
+function showToast(message, type = "info", duration = 3200) {
+  const area = $("toastArea");
+  const toast = document.createElement("div");
+
+  toast.className = `toast ${type}`;
+
+  const icon = type === "success"
+    ? "✓"
+    : type === "error"
+      ? "!"
+      : "●";
+
+  toast.innerHTML = `
+    <span class="toast-icon">${icon}</span>
+    <div class="toast-message">${escapeHTML(message)}</div>
+  `;
+
+  area.appendChild(toast);
+
+  window.setTimeout(() => {
+    toast.style.opacity = "0";
+    toast.style.transform = "translateX(10px)";
+
+    window.setTimeout(() => toast.remove(), 220);
+  }, duration);
+}
+
+function setDatabaseStatus(message, status = "loading") {
+  const dot = $("databaseDot");
+  const text = $("databaseStatus");
+
+  text.textContent = message;
+  dot.className = "status-dot";
+
+  if (status === "online") dot.classList.add("online");
+  if (status === "offline") dot.classList.add("offline");
+}
+
+/* =========================================================
+   5. PLAYER AND TEAM DATA NORMALIZATION
+   ========================================================= */
+
+function safeNumber(value) {
+  if (value === null || value === undefined || value === "") {
+    return null;
   }
+
+  const number = Number(value);
+  return Number.isFinite(number) ? number : null;
 }
 
-function showMessage(id, text, type = "") {
-  const el = $(id);
-  el.textContent = text;
-  el.className = "message show " + type;
+function getFirstValue(object, paths) {
+  for (const path of paths) {
+    let current = object;
+
+    for (const part of path.split(".")) {
+      if (current == null) {
+        current = undefined;
+        break;
+      }
+
+      current = current[part];
+    }
+
+    if (
+      current !== undefined &&
+      current !== null &&
+      current !== ""
+    ) {
+      return current;
+    }
+  }
+
+  return null;
 }
 
-function hideMessage(id) {
-  $(id).className = "message";
-  $(id).textContent = "";
+function getTeamName(team) {
+  if (!team) return "Unknown Team";
+
+  if (typeof team === "string") return team;
+
+  return String(
+    getFirstValue(team, [
+      "name",
+      "teamName",
+      "fullName",
+      "displayName",
+      "abbrev"
+    ]) || "Unknown Team"
+  );
 }
 
-function setStatus(text, type = "") {
-  $("statusText").textContent = text;
-  $("statusDot").className = "status-dot " + type;
+function getTeamAbbreviation(team) {
+  if (!team || typeof team !== "object") return "";
+
+  return String(
+    getFirstValue(team, [
+      "abbrev",
+      "abbreviation",
+      "shortName",
+      "code"
+    ]) || ""
+  );
 }
 
-function showHelp() {
-  $("helpDialog").showModal();
+function getDivisionName(team, teamName) {
+  if (team && typeof team === "object") {
+    const explicit = getFirstValue(team, [
+      "divisionName",
+      "division.name",
+      "division",
+      "divName"
+    ]);
+
+    if (typeof explicit === "string" && explicit.trim()) {
+      const normalized = explicit.trim();
+
+      for (const known of Object.values(DIVISION_NAMES)) {
+        if (normalized.toLowerCase().includes(known.toLowerCase())) {
+          return known;
+        }
+      }
+
+      if (normalized.length > 1 && !/^\d+$/.test(normalized)) {
+        return normalized;
+      }
+    }
+
+    const did = safeNumber(getFirstValue(team, [
+      "did",
+      "divisionId",
+      "div"
+    ]));
+
+    if (did !== null && DIVISION_NAMES[did]) {
+      return DIVISION_NAMES[did];
+    }
+  }
+
+  return TEAM_DIVISION_FALLBACK[teamName] || "Unknown";
 }
 
-function goHome() {
-  $("homeScreen").classList.remove("hidden");
-  $("playerScreen").classList.add("hidden");
-  $("wordScreen").classList.add("hidden");
-  updateStatsUI();
+function normalizePosition(value) {
+  if (!value) return "Unknown";
+
+  const raw = String(value)
+    .toUpperCase()
+    .replace(/\s+/g, "")
+    .replace(/,/g, "/");
+
+  const parts = raw.split(/[\/-]/).filter(Boolean);
+  const labels = [];
+
+  for (const part of parts) {
+    if (part === "PG" || part === "G") {
+      if (!labels.includes("Guard")) labels.push("Guard");
+    } else if (part === "SG") {
+      if (!labels.includes("Guard")) labels.push("Guard");
+    } else if (part === "SF" || part === "PF" || part === "F") {
+      if (!labels.includes("Forward")) labels.push("Forward");
+    } else if (part === "C") {
+      if (!labels.includes("Center")) labels.push("Center");
+    } else if (part.includes("G") && part.includes("F")) {
+      if (!labels.includes("Guard")) labels.push("Guard");
+      if (!labels.includes("Forward")) labels.push("Forward");
+    } else if (part.includes("C")) {
+      if (!labels.includes("Center")) labels.push("Center");
+    }
+  }
+
+  if (!labels.length) return String(value).trim();
+
+  return labels.join("/");
 }
 
-function openPlayerGame() {
-  $("homeScreen").classList.add("hidden");
-  $("wordScreen").classList.add("hidden");
-  $("playerScreen").classList.remove("hidden");
+function normalizePlayer(rawPlayer, index) {
+  const rawName = getFirstValue(rawPlayer, [
+    "name",
+    "fullName",
+    "displayName"
+  ]);
 
-  if (!players.length) {
-    showMessage("playerMessage",
-      "The roster hasn't loaded yet. Check your connection and try again.",
-      "warn");
+  let name = rawName;
+
+  if (!name) {
+    const first = getFirstValue(rawPlayer, [
+      "firstName",
+      "first"
+    ]);
+
+    const last = getFirstValue(rawPlayer, [
+      "lastName",
+      "last"
+    ]);
+
+    if (first || last) {
+      name = `${first || ""} ${last || ""}`.trim();
+    }
+  }
+
+  if (!name) return null;
+
+  const tid = safeNumber(getFirstValue(rawPlayer, [
+    "tid",
+    "teamId",
+    "team.id"
+  ]));
+
+  let teamObject = null;
+
+  if (tid !== null) {
+    teamObject = teamsById.get(tid) || null;
+  }
+
+  if (!teamObject) {
+    const embeddedTeam = rawPlayer.team;
+
+    if (embeddedTeam && typeof embeddedTeam === "object") {
+      teamObject = embeddedTeam;
+    }
+  }
+
+  const embeddedTeamName = typeof rawPlayer.team === "string"
+    ? rawPlayer.team
+    : "";
+
+  const teamName = teamObject
+    ? getTeamName(teamObject)
+    : embeddedTeamName || "Unknown Team";
+
+  const jerseyRaw = getFirstValue(rawPlayer, [
+    "jerseyNumber",
+    "jersey",
+    "number",
+    "uniformNumber"
+  ]);
+
+  const jerseyNumber = jerseyRaw === null
+    ? null
+    : String(jerseyRaw).trim();
+
+  const bornYear = safeNumber(getFirstValue(rawPlayer, [
+    "born.year",
+    "birthYear",
+    "birth_year"
+  ]));
+
+  const currentYear = new Date().getFullYear();
+
+  const age = bornYear && bornYear > 1900 && bornYear <= currentYear
+    ? currentYear - bornYear
+    : safeNumber(getFirstValue(rawPlayer, [
+        "age"
+      ]));
+
+  let height = safeNumber(getFirstValue(rawPlayer, [
+    "hgt",
+    "heightInches",
+    "height_inches"
+  ]));
+
+  if (height === null) {
+    const heightText = getFirstValue(rawPlayer, [
+      "height",
+      "heightText"
+    ]);
+
+    if (typeof heightText === "string") {
+      const match = heightText.match(/(\d+)\s*['′-]\s*(\d+)/);
+
+      if (match) {
+        height = Number(match[1]) * 12 + Number(match[2]);
+      } else {
+        const cm = heightText.match(/(\d+(?:\.\d+)?)\s*cm/i);
+        if (cm) height = Math.round(Number(cm[1]) / 2.54);
+      }
+    }
+  }
+
+  if (height !== null && height > 250) {
+    // Likely centimetres rather than inches.
+    height = Math.round(height / 2.54);
+  }
+
+  const positionRaw = getFirstValue(rawPlayer, [
+    "pos",
+    "position",
+    "positions"
+  ]);
+
+  const position = Array.isArray(positionRaw)
+    ? normalizePosition(positionRaw.join("/"))
+    : normalizePosition(positionRaw);
+
+  const birthState = getFirstValue(rawPlayer, [
+    "born.loc",
+    "birthplace",
+    "birthPlace",
+    "birth_location",
+    "bornLocation"
+  ]);
+
+  const birthCountry = getFirstValue(rawPlayer, [
+    "born.country",
+    "birthCountry",
+    "birth_country"
+  ]);
+
+  let birthplace = "";
+
+  if (typeof birthState === "string") {
+    birthplace = birthState.trim();
+  }
+
+  if (
+    birthplace &&
+    typeof birthCountry === "string" &&
+    birthCountry.trim() &&
+    !birthplace.toLowerCase().includes(birthCountry.toLowerCase())
+  ) {
+    birthplace += `, ${birthCountry.trim()}`;
+  } else if (!birthplace && typeof birthCountry === "string") {
+    birthplace = birthCountry.trim();
+  }
+
+  const division = getDivisionName(teamObject, teamName);
+
+  return {
+    id: String(
+      getFirstValue(rawPlayer, [
+        "pid",
+        "id",
+        "playerId"
+      ]) ?? `${normalizeName(name)}-${index}`
+    ),
+    name: String(name).trim(),
+    normalizedName: normalizeName(name),
+    team: teamName,
+    teamAbbreviation: getTeamAbbreviation(teamObject),
+    tid,
+    division,
+    jerseyNumber,
+    age,
+    height,
+    position,
+    birthplace,
+    bornYear,
+    experience: safeNumber(getFirstValue(rawPlayer, [
+      "yearsExperience",
+      "experience",
+      "exp"
+    ])),
+    college: String(getFirstValue(rawPlayer, [
+      "college",
+      "school"
+    ]) || "").trim(),
+    raw: rawPlayer
+  };
+}
+
+/* =========================================================
+   6. ROBUST ROSTER LOADER
+   ========================================================= */
+
+function findArrayInPayload(payload, keys) {
+  for (const key of keys) {
+    if (Array.isArray(payload?.[key])) {
+      return payload[key];
+    }
+  }
+
+  return null;
+}
+
+function normalizeRosterPayload(payload) {
+  let rawPlayers = findArrayInPayload(payload, [
+    "players",
+    "roster",
+    "playerList",
+    "data"
+  ]);
+
+  let rawTeams = findArrayInPayload(payload, [
+    "teams",
+    "teamList"
+  ]);
+
+  if (!rawPlayers && Array.isArray(payload)) {
+    rawPlayers = payload;
+  }
+
+  if (!rawPlayers && payload && typeof payload === "object") {
+    const values = Object.values(payload);
+
+    const possiblePlayers = values.filter(value =>
+      value &&
+      typeof value === "object" &&
+      !Array.isArray(value) &&
+      (
+        value.name ||
+        value.fullName ||
+        value.firstName
+      )
+    );
+
+    if (possiblePlayers.length > 10) {
+      rawPlayers = possiblePlayers;
+    }
+  }
+
+  if (!rawPlayers) {
+    throw new Error(
+      "The roster file did not contain a recognizable player list."
+    );
+  }
+
+  teamsById = new Map();
+  teamsByName = new Map();
+
+  if (rawTeams) {
+    rawTeams.forEach((team, index) => {
+      if (!team || typeof team !== "object") return;
+
+      const id = safeNumber(getFirstValue(team, [
+        "tid",
+        "id",
+        "teamId"
+      ]));
+
+      if (id !== null) {
+        teamsById.set(id, team);
+      }
+
+      const name = getTeamName(team);
+      teamsByName.set(normalizeName(name), team);
+
+      const abbrev = getTeamAbbreviation(team);
+      if (abbrev) teamsByName.set(normalizeName(abbrev), team);
+    });
+  }
+
+  const normalized = rawPlayers
+    .map((player, index) => normalizePlayer(player, index))
+    .filter(Boolean);
+
+  // Keep players with a valid NBA team when the source provides team IDs.
+  // Do not discard the roster if a dataset uses a different ID convention.
+  const withTeam = normalized.filter(player => {
+    return (
+      player.team !== "Unknown Team" &&
+      player.team.trim() !== ""
+    );
+  });
+
+  players = withTeam.length >= 10 ? withTeam : normalized;
+
+  const unique = new Map();
+
+  for (const player of players) {
+    const key = player.normalizedName;
+
+    if (!key) continue;
+
+    if (!unique.has(key)) {
+      unique.set(key, player);
+    }
+  }
+
+  players = [...unique.values()];
+
+  if (players.length < 10) {
+    throw new Error(
+      "The roster loaded, but too few recognizable players were found."
+    );
+  }
+
+  rosterReady = true;
+  rosterError = "";
+
+  saveStoredObject(STORAGE_KEYS.cache, {
+    savedAt: Date.now(),
+    players: players.map(player => ({
+      id: player.id,
+      name: player.name,
+      team: player.team,
+      teamAbbreviation: player.teamAbbreviation,
+      division: player.division,
+      jerseyNumber: player.jerseyNumber,
+      age: player.age,
+      height: player.height,
+      position: player.position,
+      birthplace: player.birthplace,
+      bornYear: player.bornYear,
+      experience: player.experience,
+      college: player.college
+    })),
+    teamCount: teamsById.size
+  });
+
+  updateRosterUI();
+
+  return players;
+}
+
+async function loadRoster(forceRefresh = false) {
+  if (rosterLoading) {
+    showToast("The roster is already loading.", "info");
     return;
   }
 
-  startPlayerGame();
-}
+  rosterLoading = true;
+  setDatabaseStatus("LOADING ROSTER", "loading");
 
-function openWordGame() {
-  $("homeScreen").classList.add("hidden");
-  $("playerScreen").classList.add("hidden");
-  $("wordScreen").classList.remove("hidden");
-  startWordGame();
-}
+  if (forceRefresh) {
+    showToast("Refreshing the player database...", "info");
+  }
 
-/* ---------------------------
-   ROSTER LOADING
----------------------------- */
-
-function normalizePosition(position) {
-  const p = String(position || "").toUpperCase().trim();
-  if (!p) return "Unknown";
-
-  const map = {
-    PG: "Guard", SG: "Guard", G: "Guard",
-    SF: "Forward", PF: "Forward", F: "Forward",
-    C: "Center",
-    GF: "Guard/Forward", FG: "Guard/Forward",
-    FC: "Forward/Center", CF: "Forward/Center",
-    GFC: "Guard/Forward/Center"
-  };
-
-  return map[p] || p;
-}
-
-function heightLabel(inches) {
-  const n = Number(inches);
-  if (!Number.isFinite(n) || n <= 0) return "Unknown";
-  return Math.floor(n / 12) + "'" + (n % 12) + '"';
-}
-
-function conferenceForTeam(team) {
-  if (!team) return "Unknown";
-  const conf = Number(team.cid);
-  if (conf === 0) return "East";
-  if (conf === 1) return "West";
-  return "Unknown";
-}
-
-function cleanPlayer(p) {
-  if (!p || !p.name || !Number.isInteger(Number(p.tid))) return null;
-
-  const tid = Number(p.tid);
-  if (tid < 0 || tid > 29) return null;
-
-  const team = teamsById[tid];
-  if (!team) return null;
-
-  const name = String(p.name).trim();
-  if (!name) return null;
-
-  const bornYear = Number(p.born && p.born.year);
-  const age = Number.isFinite(bornYear) && bornYear > 1900
-    ? new Date().getFullYear() - bornYear
-    : null;
-
-  const jerseyRaw = p.jerseyNumber;
-  const jersey = jerseyRaw == null || jerseyRaw === ""
-    ? "?"
-    : String(jerseyRaw);
-
-  return {
-    name,
-    tid,
-    team: [team.region, team.name].filter(Boolean).join(" "),
-    teamShort: team.abbrev || team.name || "Unknown",
-    conference: conferenceForTeam(team),
-    position: normalizePosition(p.pos),
-    rawPosition: String(p.pos || "?").toUpperCase(),
-    height: Number(p.hgt) || null,
-    heightText: heightLabel(p.hgt),
-    age,
-    jersey,
-    image: typeof p.imgURL === "string" ? p.imgURL : ""
-  };
-}
-
-async function loadRoster() {
-  setStatus("Loading roster…");
+  let lastError = null;
 
   try {
-    const response = await fetch(ROSTER_URL, { cache: "no-store" });
-    if (!response.ok) {
-      throw new Error("Roster server returned HTTP " + response.status);
-    }
+    for (const url of ROSTER_URLS) {
+      try {
+        const response = await fetch(url, {
+          cache: forceRefresh ? "no-store" : "default"
+        });
 
-    const data = await response.json();
-    if (!data || !Array.isArray(data.players) || !Array.isArray(data.teams)) {
-      throw new Error("The roster data has an unexpected format.");
-    }
+        if (!response.ok) {
+          throw new Error(`Roster request failed (${response.status}).`);
+        }
 
-    teamsById = {};
-    data.teams.forEach(team => {
-      if (team && Number.isInteger(Number(team.tid))) {
-        teamsById[Number(team.tid)] = team;
+        const payload = await response.json();
+
+        normalizeRosterPayload(payload);
+
+        setDatabaseStatus("ROSTER READY", "online");
+        showToast(
+          `Loaded ${players.length} players successfully.`,
+          "success"
+        );
+
+        rosterLoading = false;
+        return;
+      } catch (error) {
+        lastError = error;
+        console.warn("Roster source failed:", error);
       }
-    });
+    }
 
-    players = data.players
-      .map(cleanPlayer)
-      .filter(Boolean);
+    // Use cached roster if the live source is unavailable.
+    const cache = loadStoredObject(STORAGE_KEYS.cache, null);
 
-    const unique = new Map();
-    players.forEach(p => {
-      const key = p.name.toLowerCase() + "|" + p.tid;
-      if (!unique.has(key)) unique.set(key, p);
-    });
-    players = [...unique.values()].sort((a, b) =>
-      a.name.localeCompare(b.name)
+    if (cache && Array.isArray(cache.players) && cache.players.length >= 10) {
+      players = cache.players.map((player, index) => ({
+        ...player,
+        normalizedName: normalizeName(player.name),
+        raw: {},
+        tid: null
+      }));
+
+      rosterReady = true;
+      rosterError = "Using the previously cached roster.";
+
+      setDatabaseStatus("CACHED ROSTER", "offline");
+      updateRosterUI();
+
+      showToast(
+        "The live roster could not load. Using saved roster data instead.",
+        "info",
+        5000
+      );
+
+      rosterLoading = false;
+      return;
+    }
+
+    throw lastError || new Error("Could not load the roster.");
+  } catch (error) {
+    rosterReady = false;
+    rosterError = error?.message || "Unknown roster error";
+
+    setDatabaseStatus("ROSTER UNAVAILABLE", "offline");
+    updateRosterUI();
+
+    showToast(
+      "The roster could not load. Check your connection and refresh the roster.",
+      "error",
+      5500
     );
 
-    if (players.length < 50) {
-      throw new Error("Too few players were found in the roster.");
-    }
-
-    const options = $("playerOptions");
-    options.replaceChildren();
-    players.forEach(p => {
-      const option = document.createElement("option");
-      option.value = p.name;
-      options.appendChild(option);
-    });
-
-    setStatus(players.length + " players loaded", "ready");
-  } catch (error) {
-    console.error("Roster load failed:", error);
-    setStatus("Roster unavailable", "error");
-    showMessage("playerMessage",
-      "Couldn't load the roster. Check your internet connection and refresh the page. Details: " +
-      error.message, "bad");
+    console.error("BUZZER roster error:", error);
+  } finally {
+    rosterLoading = false;
   }
 }
 
-/* ---------------------------
-   PLAYER GAME
----------------------------- */
+function updateRosterUI() {
+  $("heroPlayerCount").textContent = rosterReady
+    ? players.length.toLocaleString()
+    : "—";
+
+  $("playerPoolCount").textContent = rosterReady
+    ? players.length.toLocaleString()
+    : "—";
+
+  $("settingsPlayerCount").textContent = rosterReady
+    ? players.length.toLocaleString()
+    : "—";
+
+  $("settingsTeamCount").textContent = teamsById.size || "—";
+
+  $("settingsDatabaseStatus").textContent = rosterReady
+    ? (rosterError ? "Cached roster" : "Ready")
+    : "Unavailable";
+
+  if (rosterReady) {
+    setDatabaseStatus(
+      rosterError ? "CACHED ROSTER" : "ROSTER READY",
+      rosterError ? "offline" : "online"
+    );
+  }
+
+  if (!rosterReady && rosterError) {
+    $("comparisonContainer").innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">⚠️</div>
+        <strong>Player database unavailable</strong>
+        <p>${escapeHTML(rosterError)}</p>
+        <button class="btn btn-secondary btn-small"
+                onclick="loadRoster(true)">TRY AGAIN</button>
+      </div>
+    `;
+  }
+
+  renderAllStats();
+}
+
+/* =========================================================
+   7. GAME STATE FACTORY
+   ========================================================= */
+
+function createEmptyGame(mode) {
+  return {
+    mode,
+    answer: null,
+    guesses: [],
+    attempts: 0,
+    ended: false,
+    won: false,
+    startedAt: null,
+    endedAt: null,
+    clues: [],
+    cluesRevealed: 0,
+    lastAnswerId: null,
+    roundId: null
+  };
+}
+
+/* =========================================================
+   8. NAVIGATION
+   ========================================================= */
+
+function showPage(pageName) {
+  const allowed = [
+    "home",
+    "player",
+    "hints",
+    "stats",
+    "settings"
+  ];
+
+  if (!allowed.includes(pageName)) return;
+
+  activePage = pageName;
+
+  document.querySelectorAll(".page").forEach(page => {
+    page.classList.toggle("active", page.id === `page-${pageName}`);
+  });
+
+  document.querySelectorAll(".nav-link").forEach(button => {
+    button.classList.toggle(
+      "active",
+      button.dataset.page === pageName
+    );
+  });
+
+  if (pageName === "home") {
+    renderHome();
+  }
+
+  if (pageName === "stats") {
+    renderAllStats();
+  }
+
+  if (pageName === "settings") {
+    renderSettings();
+  }
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+/* =========================================================
+   9. ROUND CREATION
+   ========================================================= */
+
+function chooseNewAnswer(previousId) {
+  if (!players.length) return null;
+
+  let pool = players;
+
+  if (players.length > 1 && previousId) {
+    pool = players.filter(player => player.id !== previousId);
+  }
+
+  return randomItem(pool);
+}
+
+function makeRoundId() {
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+}
 
 function startPlayerGame() {
-  playerGuesses = [];
-  playerFinished = false;
-  hintsUsed = 0;
-  hideMessage("playerMessage");
-
-  const dailyKey = todayKey();
-  const saved = safeRead(PLAYER_DAILY_KEY, null);
-
-  if (saved && saved.date === dailyKey && saved.targetName) {
-    mysteryPlayer = players.find(p => p.name === saved.targetName) || null;
+  if (!rosterReady || !players.length) {
+    showToast("The player database is not ready yet.", "error");
+    return;
   }
 
-  if (!mysteryPlayer) {
-    mysteryPlayer = dailyPick(players, "buzzer-player-" + dailyKey);
-  }
+  playerRoundNumber++;
+  playerGame = createEmptyGame("player");
+  playerGame.answer = chooseNewAnswer(playerGame.lastAnswerId);
+  playerGame.lastAnswerId = playerGame.answer?.id || null;
+  playerGame.startedAt = Date.now();
+  playerGame.roundId = makeRoundId();
 
-  if (!mysteryPlayer) return;
+  $("playerGuessInput").value = "";
+  $("playerGuessInput").disabled = false;
+  $("playerGuessButton").disabled = false;
 
-  $("playerRoundText").textContent = "Daily mystery · " + dailyKey;
-  $("playerInput").value = "";
-  $("playerInput").disabled = false;
-  $("guessButton").disabled = false;
-  $("hintButton").disabled = false;
-  renderClues();
-  renderPlayerGuesses();
-  updateAttemptCounter();
+  $("playerResult").innerHTML = "";
+  $("comparisonContainer").innerHTML = `
+    <div class="empty-state">
+      <div class="empty-icon">🏀</div>
+      <strong>The court is yours.</strong>
+      Submit a player name to start comparing attributes.
+    </div>
+  `;
+
+  $("playerRoundLabel").textContent = `ROUND ${playerRoundNumber}`;
+  $("playerGuessCount").textContent = "No guesses yet. Make your first move.";
+  $("playerAttempts").textContent = "0";
+  $("playerRoundStatus").textContent = "In progress";
+
+  closeSuggestions("playerSuggestions");
+  renderHome();
+  showPage("player");
 }
 
-function resetPlayerGame() {
-  // This restarts the current mystery; it does not change the daily answer.
-  startPlayerGame();
+function startHintGame() {
+  if (!rosterReady || !players.length) {
+    showToast("The player database is not ready yet.", "error");
+    return;
+  }
+
+  hintRoundNumber++;
+  hintGame = createEmptyGame("hints");
+  hintGame.answer = chooseNewAnswer(hintGame.lastAnswerId);
+  hintGame.lastAnswerId = hintGame.answer?.id || null;
+  hintGame.startedAt = Date.now();
+  hintGame.roundId = makeRoundId();
+
+  hintGame.clues = makeClues(hintGame.answer);
+  hintGame.cluesRevealed = Math.min(1, hintGame.clues.length);
+
+  $("hintGuessInput").value = "";
+  $("hintGuessInput").disabled = false;
+  $("hintGuessButton").disabled = false;
+
+  $("hintResult").innerHTML = "";
+  $("hintFeedback").innerHTML = "";
+
+  $("hintRoundLabel").textContent = `ROUND ${hintRoundNumber}`;
+  $("hintAttemptsLabel").textContent = "0 GUESSES";
+  $("hintAttempts").textContent = "0";
+  $("hintCluesUsed").textContent = String(hintGame.cluesRevealed);
+  $("hintCluesLeft").textContent = String(
+    Math.max(0, hintGame.clues.length - hintGame.cluesRevealed)
+  );
+  $("hintRoundStatus").textContent = "In progress";
+
+  renderClues();
+  closeSuggestions("hintSuggestions");
+
+  renderHome();
+  showPage("hints");
+}
+
+function confirmNewRound(mode) {
+  const game = mode === "player" ? playerGame : hintGame;
+
+  if (
+    settings.confirmNewRound &&
+    game.answer &&
+    !game.ended &&
+    game.attempts > 0
+  ) {
+    const confirmed = window.confirm(
+      "Start a new round? Your current round will end without a win."
+    );
+
+    if (!confirmed) return;
+  }
+
+  if (mode === "player") {
+    startPlayerGame();
+  } else {
+    startHintGame();
+  }
+}
+
+/* =========================================================
+   10. NAME LOOKUP AND AUTOCOMPLETE
+   ========================================================= */
+
+function findPlayerByName(name) {
+  const normalized = normalizeName(name);
+
+  if (!normalized) return null;
+
+  return players.find(player =>
+    player.normalizedName === normalized
+  ) || null;
+}
+
+function searchPlayers(query, limit = 8) {
+  const normalized = normalizeName(query);
+
+  if (!normalized || !players.length) return [];
+
+  const startsWith = [];
+  const contains = [];
+
+  for (const player of players) {
+    if (player.normalizedName.startsWith(normalized)) {
+      startsWith.push(player);
+    } else if (player.normalizedName.includes(normalized)) {
+      contains.push(player);
+    }
+  }
+
+  return [...startsWith, ...contains].slice(0, limit);
+}
+
+function closeSuggestions(id) {
+  const element = $(id);
+
+  if (!element) return;
+
+  element.classList.add("hidden");
+  element.innerHTML = "";
+}
+
+function renderSuggestions(inputId, suggestionId, query) {
+  const list = $(suggestionId);
+
+  if (!settings.autocomplete || query.trim().length < 2) {
+    closeSuggestions(suggestionId);
+    return;
+  }
+
+  const results = searchPlayers(query);
+
+  if (!results.length) {
+    closeSuggestions(suggestionId);
+    return;
+  }
+
+  list.innerHTML = results.map(player => `
+    <button class="suggestion" type="button"
+            data-player-name="${escapeHTML(player.name)}">
+      <span class="suggestion-name">${escapeHTML(player.name)}</span>
+      <span class="suggestion-team">${escapeHTML(player.team)}</span>
+    </button>
+  `).join("");
+
+  list.classList.remove("hidden");
+
+  list.querySelectorAll(".suggestion").forEach(button => {
+    button.addEventListener("click", () => {
+      $(inputId).value = button.dataset.playerName;
+      closeSuggestions(suggestionId);
+      $(inputId).focus();
+    });
+  });
+}
+
+function attachAutocomplete(inputId, suggestionId) {
+  const input = $(inputId);
+
+  input.addEventListener("input", () => {
+    renderSuggestions(inputId, suggestionId, input.value);
+  });
+
+  input.addEventListener("focus", () => {
+    renderSuggestions(inputId, suggestionId, input.value);
+  });
+
+  input.addEventListener("keydown", event => {
+    if (event.key === "Escape") {
+      closeSuggestions(suggestionId);
+    }
+  });
+
+  document.addEventListener("click", event => {
+    if (
+      !event.target.closest(`#${inputId}`) &&
+      !event.target.closest(`#${suggestionId}`)
+    ) {
+      closeSuggestions(suggestionId);
+    }
+  });
+}
+
+/* =========================================================
+   11. ATTRIBUTE COMPARISON ENGINE
+   ========================================================= */
+
+function compareExact(a, b) {
+  return String(a ?? "").toLowerCase() ===
+         String(b ?? "").toLowerCase();
+}
+
+function compareNumeric(guessValue, answerValue) {
+  if (
+    guessValue === null ||
+    guessValue === undefined ||
+    answerValue === null ||
+    answerValue === undefined
+  ) {
+    return {
+      status: "wrong",
+      arrow: "",
+      label: "Unknown"
+    };
+  }
+
+  const guessNumber = Number(guessValue);
+  const answerNumber = Number(answerValue);
+
+  if (!Number.isFinite(guessNumber) || !Number.isFinite(answerNumber)) {
+    return {
+      status: compareExact(guessValue, answerValue) ? "correct" : "wrong",
+      arrow: "",
+      label: String(guessValue)
+    };
+  }
+
+  if (guessNumber === answerNumber) {
+    return {
+      status: "correct",
+      arrow: "",
+      label: String(guessValue)
+    };
+  }
+
+  const difference = Math.abs(guessNumber - answerNumber);
+
+  let status = "wrong";
+
+  if (difference <= 1) status = "close";
+  if (difference <= 2 && status !== "close") status = "close";
+
+  return {
+    status,
+    arrow: guessNumber < answerNumber ? "↑" : "↓",
+    label: String(guessValue)
+  };
+}
+
+function compareText(guessValue, answerValue) {
+  if (!guessValue || !answerValue) {
+    return {
+      status: "wrong",
+      arrow: "",
+      label: guessValue || "Unknown"
+    };
+  }
+
+  return {
+    status: compareExact(guessValue, answerValue) ? "correct" : "wrong",
+    arrow: "",
+    label: String(guessValue)
+  };
+}
+
+function compareDivision(guessPlayer, answerPlayer) {
+  if (
+    guessPlayer.division !== "Unknown" &&
+    answerPlayer.division !== "Unknown" &&
+    guessPlayer.division === answerPlayer.division
+  ) {
+    return {
+      status: "correct",
+      arrow: "",
+      label: guessPlayer.division
+    };
+  }
+
+  return {
+    status: "wrong",
+    arrow: "",
+    label: guessPlayer.division || "Unknown"
+  };
+}
+
+function compareTeam(guessPlayer, answerPlayer) {
+  if (compareExact(guessPlayer.team, answerPlayer.team)) {
+    return {
+      status: "correct",
+      arrow: "",
+      label: guessPlayer.team
+    };
+  }
+
+  if (
+    guessPlayer.division !== "Unknown" &&
+    guessPlayer.division === answerPlayer.division
+  ) {
+    return {
+      status: "close",
+      arrow: "",
+      label: guessPlayer.team
+    };
+  }
+
+  return {
+    status: "wrong",
+    arrow: "",
+    label: guessPlayer.team
+  };
+}
+
+function compareHeight(guessPlayer, answerPlayer) {
+  const result = compareNumeric(
+    guessPlayer.height,
+    answerPlayer.height
+  );
+
+  return {
+    ...result,
+    label: formatHeight(guessPlayer.height)
+  };
+}
+
+function compareJersey(guessPlayer, answerPlayer) {
+  const guessNumber = safeNumber(guessPlayer.jerseyNumber);
+  const answerNumber = safeNumber(answerPlayer.jerseyNumber);
+
+  if (guessNumber === null || answerNumber === null) {
+    return {
+      status: compareExact(
+        guessPlayer.jerseyNumber,
+        answerPlayer.jerseyNumber
+      ) ? "correct" : "wrong",
+      arrow: "",
+      label: guessPlayer.jerseyNumber ?? "Unknown"
+    };
+  }
+
+  return compareNumeric(guessNumber, answerNumber);
+}
+
+function compareAttribute(guessPlayer, answerPlayer, key) {
+  switch (key) {
+    case "team":
+      return compareTeam(guessPlayer, answerPlayer);
+
+    case "division":
+      return compareDivision(guessPlayer, answerPlayer);
+
+    case "jersey":
+      return compareJersey(guessPlayer, answerPlayer);
+
+    case "age":
+      return compareNumeric(guessPlayer.age, answerPlayer.age);
+
+    case "height":
+      return compareHeight(guessPlayer, answerPlayer);
+
+    case "position":
+      return compareText(guessPlayer.position, answerPlayer.position);
+
+    default:
+      return {
+        status: "wrong",
+        arrow: "",
+        label: "Unknown"
+      };
+  }
+}
+
+function renderAttributeCell(result) {
+  const status = ["correct", "close", "wrong"].includes(result.status)
+    ? result.status
+    : "wrong";
+
+  const arrow = result.arrow
+    ? `<span class="cell-arrow">${escapeHTML(result.arrow)}</span>`
+    : "";
+
+  return `
+    <div class="attribute-cell ${status}">
+      <span>${escapeHTML(result.label)}</span>
+      ${arrow}
+    </div>
+  `;
+}
+
+/* =========================================================
+   12. PLAYER GUESS SUBMISSION
+   ========================================================= */
+
+function submitPlayerGuess(name) {
+  if (!playerGame.answer || playerGame.ended) {
+    showToast("Start a new round to keep playing.", "info");
+    return;
+  }
+
+  const trimmed = String(name || "").trim();
+
+  if (!trimmed) {
+    showToast("Enter a player's name first.", "error");
+    return;
+  }
+
+  const guess = findPlayerByName(trimmed);
+
+  if (!guess) {
+    showToast(
+      "That name wasn't found in the loaded roster. Try autocomplete or check the spelling.",
+      "error",
+      4200
+    );
+    return;
+  }
+
+  if (playerGame.guesses.some(item =>
+    item.normalizedName === guess.normalizedName
+  )) {
+    showToast("You've already guessed that player.", "info");
+    return;
+  }
+
+  playerGame.attempts++;
+
+  playerGame.guesses.unshift({
+    ...guess,
+    guessedAt: Date.now()
+  });
+
+  $("playerGuessInput").value = "";
+  closeSuggestions("playerSuggestions");
+
+  renderComparison();
+  $("playerAttempts").textContent = String(playerGame.attempts);
+  $("playerGuessCount").textContent =
+    `${playerGame.attempts} ${plural(playerGame.attempts, "guess")} submitted.`;
+
+  if (guess.normalizedName === playerGame.answer.normalizedName) {
+    finishGame("player", true);
+  }
+}
+
+/* =========================================================
+   13. COMPARISON TABLE RENDERING
+   ========================================================= */
+
+function renderComparison() {
+  const container = $("comparisonContainer");
+
+  if (!playerGame.guesses.length) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🏀</div>
+        <strong>The court is yours.</strong>
+        Submit a player name to start comparing attributes.
+      </div>
+    `;
+    return;
+  }
+
+  const rows = playerGame.guesses.map(guess => {
+    const answer = playerGame.answer;
+
+    const team = compareAttribute(guess, answer, "team");
+    const division = compareAttribute(guess, answer, "division");
+    const jersey = compareAttribute(guess, answer, "jersey");
+    const age = compareAttribute(guess, answer, "age");
+    const height = compareAttribute(guess, answer, "height");
+    const position = compareAttribute(guess, answer, "position");
+
+    return `
+      <tr>
+        <td>
+          <div class="player-cell">
+            <span class="player-cell-name">${escapeHTML(guess.name)}</span>
+            <span class="player-cell-meta">Guess #${playerGame.guesses.indexOf(guess) + 1}</span>
+          </div>
+        </td>
+        <td>${renderAttributeCell(team)}</td>
+        <td>${renderAttributeCell(division)}</td>
+        <td>${renderAttributeCell(jersey)}</td>
+        <td>${renderAttributeCell(age)}</td>
+        <td>${renderAttributeCell(height)}</td>
+        <td>${renderAttributeCell(position)}</td>
+      </tr>
+    `;
+  }).join("");
+
+  container.innerHTML = `
+    <div class="comparison-scroll">
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Player</th>
+            <th>Team</th>
+            <th>Division</th>
+            <th>Jersey</th>
+            <th>Age</th>
+            <th>Height</th>
+            <th>Position</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+/* =========================================================
+   14. HINT CLUE GENERATION
+   ========================================================= */
+
+function makeClues(player) {
+  if (!player) return [];
+
+  const clues = [];
+
+  if (player.position && player.position !== "Unknown") {
+    clues.push({
+      category: "POSITION",
+      text: `This player plays the position: ${player.position}.`
+    });
+  }
+
+  if (player.height && Number.isFinite(player.height)) {
+    clues.push({
+      category: "HEIGHT",
+      text: `This player's listed height is ${formatHeight(player.height)}.`
+    });
+  }
+
+  if (player.age && Number.isFinite(player.age)) {
+    clues.push({
+      category: "AGE",
+      text: `This player's approximate age is ${player.age}.`
+    });
+  }
+
+  if (
+    player.team &&
+    player.team !== "Unknown Team" &&
+    player.division !== "Unknown"
+  ) {
+    clues.push({
+      category: "DIVISION",
+      text: `This player belongs to the ${player.division} Division.`
+    });
+  }
+
+  if (player.team && player.team !== "Unknown Team") {
+    clues.push({
+      category: "TEAM",
+      text: `This player is listed on the ${player.team} roster.`
+    });
+  }
+
+  if (player.jerseyNumber !== null && player.jerseyNumber !== "") {
+    clues.push({
+      category: "JERSEY NUMBER",
+      text: `This player's listed jersey number is ${player.jerseyNumber}.`
+    });
+  }
+
+  if (player.birthplace) {
+    clues.push({
+      category: "BIRTHPLACE",
+      text: `This player was born in ${player.birthplace}.`
+    });
+  }
+
+  if (player.college) {
+    clues.push({
+      category: "COLLEGE",
+      text: `This player is associated with ${player.college}.`
+    });
+  }
+
+  if (player.experience !== null && player.experience !== undefined) {
+    clues.push({
+      category: "EXPERIENCE",
+      text: `The roster lists ${player.experience} years of experience.`
+    });
+  }
+
+  if (clues.length < 3) {
+    clues.push({
+      category: "ROSTER",
+      text: "This player is included in the currently loaded NBA roster dataset."
+    });
+  }
+
+  return shuffle(clues);
 }
 
 function renderClues() {
-  const p = mysteryPlayer;
-  if (!p) return;
+  const game = hintGame;
+  const list = $("hintList");
+  const progress = $("hintProgress");
 
-  $("clueConference").textContent = p.conference;
-  $("cluePosition").textContent = p.position;
-  $("clueHeight").textContent = p.heightText;
-  $("clueAge").textContent = p.age == null ? "Unknown" : p.age;
-  $("clueTeam").textContent = p.teamShort;
-  $("clueJersey").textContent = p.jersey;
+  if (!game.answer) {
+    list.innerHTML = `
+      <div class="empty-state">
+        <strong>No round is active.</strong>
+        Start a Hint Challenge to generate a mystery player.
+      </div>
+    `;
+    return;
+  }
+
+  const total = game.clues.length;
+  const visible = game.clues.slice(0, game.cluesRevealed);
+
+  progress.innerHTML = Array.from({ length: total }, (_, index) => `
+    <span class="${index < game.cluesRevealed ? "used" : ""}"></span>
+  `).join("");
+
+  const visibleHTML = visible.map((clue, index) => `
+    <div class="hint-card" style="animation-delay:${index * 35}ms">
+      <div class="hint-number">${index + 1}</div>
+      <div class="hint-copy">
+        <div class="hint-category">${escapeHTML(clue.category)}</div>
+        <div class="hint-text">${escapeHTML(clue.text)}</div>
+      </div>
+    </div>
+  `).join("");
+
+  const hiddenHTML = Array.from(
+    { length: Math.max(0, total - game.cluesRevealed) },
+    (_, index) => `
+      <div class="hint-hidden">
+        <div class="hint-hidden-number">${game.cluesRevealed + index + 1}</div>
+        <div>Clue hidden — reveal it when you're ready.</div>
+      </div>
+    `
+  ).join("");
+
+  list.innerHTML = visibleHTML + hiddenHTML;
+
+  const remaining = total - game.cluesRevealed;
+
+  $("hintsRemaining").textContent = remaining > 0
+    ? `${remaining} ${plural(remaining, "clue")} remaining`
+    : "All clues revealed";
+
+  $("revealHintButton").disabled =
+    game.ended || remaining <= 0;
+
+  $("hintCluesUsed").textContent = String(game.cluesRevealed);
+  $("hintCluesLeft").textContent = String(remaining);
 }
 
-function updateAttemptCounter() {
-  $("attemptCounter").textContent =
-    playerGuesses.length + " / " + MAX_PLAYER_GUESSES + " guesses";
+function revealNextHint() {
+  if (!hintGame.answer || hintGame.ended) return;
+
+  if (hintGame.cluesRevealed >= hintGame.clues.length) {
+    showToast("You've revealed every available clue.", "info");
+    return;
+  }
+
+  hintGame.cluesRevealed++;
+  renderClues();
 }
 
-function comparePosition(a, b) {
-  if (a === b) return "correct";
-  if (a.includes("/") && a.split("/").some(x => b.includes(x))) return "close";
-  if (b.includes("/") && b.split("/").some(x => a.includes(x))) return "close";
-  return "";
-}
+/* =========================================================
+   15. HINT CHALLENGE SUBMISSION
+   ========================================================= */
 
-function compareHeight(a, b) {
-  if (a == null || b == null) return "";
-  if (a === b) return "correct";
-  if (Math.abs(a - b) <= 2) return "close";
-  return "";
-}
+function submitHintGuess(name) {
+  if (!hintGame.answer || hintGame.ended) {
+    showToast("Start a new round to keep playing.", "info");
+    return;
+  }
 
-function compareAge(a, b) {
-  if (a == null || b == null) return "";
-  if (a === b) return "correct";
-  if (Math.abs(a - b) <= 2) return "close";
-  return "";
-}
+  const trimmed = String(name || "").trim();
 
-function cell(text, status = "", name = false) {
-  const el = document.createElement("div");
-  el.className = "guess-cell " + status + (name ? " name" : "");
-  el.textContent = text;
-  return el;
-}
+  if (!trimmed) {
+    showToast("Enter a player's name first.", "error");
+    return;
+  }
 
-function renderPlayerGuesses() {
-  const list = $("guessList");
-  list.replaceChildren();
-  $("emptyGuesses").classList.toggle("hidden", playerGuesses.length > 0);
-
-  playerGuesses.forEach(g => {
-    const row = document.createElement("div");
-    row.className = "guess-row";
-
-    row.appendChild(cell(g.name, "", true));
-
-    const teamStatus = g.tid === mysteryPlayer.tid ? "correct" : "";
-    row.appendChild(cell(g.teamShort, teamStatus));
-
-    row.appendChild(cell(
-      g.position,
-      comparePosition(g.position, mysteryPlayer.position)
-    ));
-
-    row.appendChild(cell(
-      g.heightText,
-      compareHeight(g.height, mysteryPlayer.height)
-    ));
-
-    row.appendChild(cell(
-      g.age == null ? "?" : String(g.age),
-      compareAge(g.age, mysteryPlayer.age)
-    ));
-
-    list.appendChild(row);
-  });
-
-  updateAttemptCounter();
-}
-
-function submitPlayerGuess(event) {
-  event.preventDefault();
-  if (playerFinished || !mysteryPlayer) return;
-
-  const value = $("playerInput").value.trim().toLowerCase();
-  const guess = players.find(p => p.name.toLowerCase() === value);
+  const guess = findPlayerByName(trimmed);
 
   if (!guess) {
-    showMessage("playerMessage",
-      "Choose a player from the suggestion list so the name matches the roster.",
-      "warn");
-    return;
-  }
-
-  if (playerGuesses.some(p => p.name === guess.name)) {
-    showMessage("playerMessage", "You already guessed that player. Try another!", "warn");
-    return;
-  }
-
-  playerGuesses.push(guess);
-  $("playerInput").value = "";
-  renderPlayerGuesses();
-
-  if (guess.name === mysteryPlayer.name) {
-    playerFinished = true;
-    finishPlayerGame(true);
-    showMessage("playerMessage",
-      "BUZZER! Correct — the mystery player was " + mysteryPlayer.name + " 🏆",
-      "good");
-    return;
-  }
-
-  if (playerGuesses.length >= MAX_PLAYER_GUESSES) {
-    playerFinished = true;
-    finishPlayerGame(false);
-    showMessage("playerMessage",
-      "Out of guesses! The answer was " + mysteryPlayer.name + ". Better luck next time.",
-      "bad");
-  } else {
-    showMessage("playerMessage",
-      "Not quite! Check the colors and use the clues to narrow it down.",
-      "warn");
-  }
-
-  if (playerFinished) {
-    $("playerInput").disabled = true;
-    $("guessButton").disabled = true;
-    $("hintButton").disabled = true;
-  }
-}
-
-function finishPlayerGame(won) {
-  const key = PLAYER_DAILY_KEY;
-  const today = todayKey();
-  const old = safeRead(key, {});
-  safeWrite(key, {
-    date: today,
-    targetName: mysteryPlayer.name,
-    finished: true,
-    won,
-    guesses: playerGuesses.length
-  });
-
-  const stats = safeRead(STATS_KEY, {
-    playerPlayed: 0, playerWins: 0, playerStreak: 0,
-    wordPlayed: 0, wordWins: 0, wordStreak: 0
-  });
-
-  if (!(old.date === today && old.finished)) {
-    stats.playerPlayed++;
-    if (won) {
-      stats.playerWins++;
-      stats.playerStreak++;
-    } else {
-      stats.playerStreak = 0;
-    }
-    safeWrite(STATS_KEY, stats);
-  }
-  updateStatsUI();
-}
-
-function revealHint() {
-  if (!mysteryPlayer || playerFinished) return;
-
-  const hints = [
-    ["clueConference", "Conference"],
-    ["cluePosition", "Position"],
-    ["clueHeight", "Height"],
-    ["clueAge", "Age"],
-    ["clueTeam", "Team"],
-    ["clueJersey", "Jersey number"]
-  ];
-
-  if (hintsUsed >= hints.length) {
-    showMessage("playerMessage", "You've revealed every available hint.", "warn");
-    return;
-  }
-
-  const [id, label] = hints[hintsUsed];
-  const el = $(id);
-  el.style.color = "var(--orange)";
-  el.style.textShadow = "0 0 18px #ff6b1a55";
-  hintsUsed++;
-
-  showMessage("playerMessage", "Hint revealed: " + label + ".", "good");
-}
-
-function revealAnswer() {
-  if (!mysteryPlayer || playerFinished) return;
-
-  playerFinished = true;
-  finishPlayerGame(false);
-  $("playerInput").disabled = true;
-  $("guessButton").disabled = true;
-  $("hintButton").disabled = true;
-  showMessage("playerMessage",
-    "The mystery player was " + mysteryPlayer.name + ". Start a new game to practise.",
-    "bad");
-}
-
-/* ---------------------------
-   WORDLE GAME
----------------------------- */
-
-function startWordGame() {
-  targetWord = dailyPick(WORDS, "buzzer-word-" + todayKey());
-  wordGuesses = [];
-  currentWord = "";
-  wordFinished = false;
-  wordKeyboardStatus = {};
-  hideMessage("wordMessage");
-
-  const saved = safeRead(WORD_DAILY_KEY, null);
-  if (saved && saved.date === todayKey()) {
-    wordGuesses = Array.isArray(saved.guesses) ? saved.guesses : [];
-    wordFinished = Boolean(saved.finished);
-    wordKeyboardStatus = saved.keyboard || {};
-  }
-
-  renderWordGrid();
-  renderKeyboard();
-}
-
-function resetWordGame() {
-  // Rebuilds the board but keeps the same daily answer and saved guesses.
-  startWordGame();
-}
-
-function renderWordGrid() {
-  const grid = $("wordGrid");
-  grid.replaceChildren();
-
-  for (let r = 0; r < MAX_WORD_GUESSES; r++) {
-    const row = document.createElement("div");
-    row.className = "word-row";
-
-    for (let c = 0; c < 5; c++) {
-      const box = document.createElement("div");
-      box.className = "letter";
-
-      const submitted = wordGuesses[r];
-      if (submitted) {
-        box.textContent = submitted.word[c] || "";
-        box.classList.add(submitted.result[c]);
-      } else if (r === wordGuesses.length && !wordFinished) {
-        box.textContent = currentWord[c] || "";
-        if (currentWord[c]) box.classList.add("filled");
-      }
-
-      row.appendChild(box);
-    }
-    grid.appendChild(row);
-  }
-
-  if (wordFinished) {
-    $("wordMessage").classList.add("show");
-    $("wordMessage").classList.remove("good", "warn", "bad");
-    $("wordMessage").classList.add(
-      wordGuesses.length && wordGuesses[wordGuesses.length - 1].word === targetWord
-        ? "good" : "warn"
+    showToast(
+      "That player isn't in the loaded roster. Try the suggestions.",
+      "error"
     );
-    $("wordMessage").textContent =
-      wordGuesses.some(g => g.word === targetWord)
-        ? "Excellent! You solved today's word. 🏆"
-        : "Today's word was " + targetWord.toUpperCase() + ". Come back tomorrow!";
-  }
-}
-
-function renderKeyboard() {
-  const keyboard = $("keyboard");
-  keyboard.replaceChildren();
-
-  const rows = ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"];
-
-  rows.forEach((letters, index) => {
-    const row = document.createElement("div");
-    row.className = "key-row";
-
-    if (index === 2) {
-      row.appendChild(makeKey("ENTER", "wide", submitWord));
-    }
-
-    for (const letter of letters) {
-      row.appendChild(makeKey(letter, "", () => addLetter(letter)));
-    }
-
-    if (index === 2) {
-      row.appendChild(makeKey("⌫", "wide", deleteLetter));
-    }
-
-    keyboard.appendChild(row);
-  });
-
-  keyboard.querySelectorAll("[data-letter]").forEach(key => {
-    const letter = key.dataset.letter;
-    if (wordKeyboardStatus[letter]) key.classList.add(wordKeyboardStatus[letter]);
-  });
-}
-
-function makeKey(text, extraClass, action) {
-  const button = document.createElement("button");
-  button.type = "button";
-  button.className = "key " + extraClass;
-  button.textContent = text;
-  button.addEventListener("click", action);
-
-  if (text.length === 1 && /^[A-Z]$/.test(text)) {
-    button.dataset.letter = text;
-  }
-
-  return button;
-}
-
-function addLetter(letter) {
-  if (wordFinished || currentWord.length >= 5) return;
-  currentWord += letter.toLowerCase();
-  renderWordGrid();
-}
-
-function deleteLetter() {
-  if (wordFinished) return;
-  currentWord = currentWord.slice(0, -1);
-  renderWordGrid();
-}
-
-function scoreWord(guess, answer) {
-  const result = Array(5).fill("miss");
-  const remaining = answer.split("");
-
-  for (let i = 0; i < 5; i++) {
-    if (guess[i] === answer[i]) {
-      result[i] = "hit";
-      remaining[i] = null;
-    }
-  }
-
-  for (let i = 0; i < 5; i++) {
-    if (result[i] === "hit") continue;
-    const index = remaining.indexOf(guess[i]);
-    if (index !== -1) {
-      result[i] = "present";
-      remaining[index] = null;
-    }
-  }
-  return result;
-}
-
-function submitWord() {
-  if (wordFinished) return;
-
-  if (currentWord.length !== 5) {
-    showMessage("wordMessage", "Your guess must be five letters long.", "warn");
     return;
   }
 
-  const guess = currentWord.toLowerCase();
-  if (!WORDS.includes(guess)) {
-    showMessage("wordMessage",
-      "That word isn't in this game's word list. Try another basketball word.",
-      "warn");
+  if (hintGame.guesses.some(item =>
+    item.normalizedName === guess.normalizedName
+  )) {
+    showToast("You've already tried that player.", "info");
     return;
   }
 
-  const result = scoreWord(guess, targetWord);
-  wordGuesses.push({ word: guess, result });
+  hintGame.attempts++;
 
-  result.forEach((status, i) => {
-    const letter = guess[i].toUpperCase();
-    const old = wordKeyboardStatus[letter];
-    const priority = { miss: 1, present: 2, hit: 3 };
-    if (!old || priority[status] > priority[old]) {
-      wordKeyboardStatus[letter] = status;
+  hintGame.guesses.push({
+    ...guess,
+    guessedAt: Date.now()
+  });
+
+  $("hintGuessInput").value = "";
+  closeSuggestions("hintSuggestions");
+
+  $("hintAttempts").textContent = String(hintGame.attempts);
+  $("hintAttemptsLabel").textContent =
+    `${hintGame.attempts} ${plural(hintGame.attempts, "GUESS")}`;
+
+  if (guess.normalizedName === hintGame.answer.normalizedName) {
+    if (settings.hintFeedback) {
+      $("hintFeedback").innerHTML = `
+        <div class="result-banner">
+          <div class="result-title">✓ CORRECT ANSWER</div>
+          <div class="result-description">
+            You identified the mystery player in ${hintGame.attempts}
+            ${plural(hintGame.attempts, "guess")} after revealing
+            ${hintGame.cluesRevealed} ${plural(hintGame.cluesRevealed, "clue")}.
+          </div>
+        </div>
+      `;
     }
-  });
 
-  currentWord = "";
-
-  if (guess === targetWord || wordGuesses.length >= MAX_WORD_GUESSES) {
-    wordFinished = true;
-    finishWordGame(guess === targetWord);
-  }
-
-  saveWordProgress();
-  renderWordGrid();
-  renderKeyboard();
-
-  if (!wordFinished) {
-    hideMessage("wordMessage");
+    finishGame("hints", true);
+  } else if (settings.hintFeedback) {
+    $("hintFeedback").innerHTML = `
+      <div class="tip-box">
+        <strong>NOT THIS TIME</strong>
+        <p>
+          ${escapeHTML(guess.name)} is not the mystery player.
+          Reconsider the clues, or reveal another one.
+        </p>
+      </div>
+    `;
   }
 }
 
-function saveWordProgress() {
-  safeWrite(WORD_DAILY_KEY, {
-    date: todayKey(),
-    guesses: wordGuesses,
-    finished: wordFinished,
-    keyboard: wordKeyboardStatus
-  });
-}
+/* =========================================================
+   16. ROUND COMPLETION AND SCORING
+   ========================================================= */
 
-function finishWordGame(won) {
-  const previous = safeRead(WORD_DAILY_KEY, null);
-  const stats = safeRead(STATS_KEY, {
-    playerPlayed: 0, playerWins: 0, playerStreak: 0,
-    wordPlayed: 0, wordWins: 0, wordStreak: 0
-  });
+function finishGame(mode, won) {
+  const game = mode === "player" ? playerGame : hintGame;
 
-  if (!(previous && previous.date === todayKey() && previous.finished)) {
-    stats.wordPlayed++;
-    if (won) {
-      stats.wordWins++;
-      stats.wordStreak++;
-    } else {
-      stats.wordStreak = 0;
-    }
-    safeWrite(STATS_KEY, stats);
+  if (!game.answer || game.ended) return;
+
+  game.ended = true;
+  game.won = Boolean(won);
+  game.endedAt = Date.now();
+
+  stats.games++;
+
+  if (won) {
+    stats.wins++;
+    stats.currentStreak++;
+    stats.bestStreak = Math.max(
+      stats.bestStreak,
+      stats.currentStreak
+    );
+  } else {
+    stats.losses++;
+    stats.currentStreak = 0;
   }
 
-  saveWordProgress();
-  updateStatsUI();
+  stats.totalGuesses += game.attempts;
 
-  const squares = wordGuesses.map(g =>
-    g.result.map(s => s === "hit" ? "🟩" : s === "present" ? "🟨" : "⬛").join("")
-  ).join("\n");
+  if (mode === "player") {
+    stats.playerGames++;
+    if (won) stats.playerWins++;
+  } else {
+    stats.hintGames++;
+    if (won) stats.hintWins++;
+  }
 
-  lastShareText = "BUZZER NBA Wordle " + todayKey() + "\n" +
-    (won ? wordGuesses.length + "/" + MAX_WORD_GUESSES : "X/" + MAX_WORD_GUESSES) +
-    "\n\n" + squares;
+  history.unshift({
+    id: game.roundId || makeRoundId(),
+    mode,
+    won: Boolean(won),
+    playerName: game.answer.name,
+    guesses: game.attempts,
+    cluesRevealed: mode === "hints" ? game.cluesRevealed : null,
+    timestamp: game.endedAt
+  });
+
+  history = history.slice(0, 100);
+
+  saveAllStats();
+
+  if (mode === "player") {
+    $("playerGuessInput").disabled = true;
+    $("playerGuessButton").disabled = true;
+    $("playerRoundStatus").textContent = won ? "Won" : "Finished";
+
+    $("playerResult").innerHTML = renderResultBanner(game, mode);
+  } else {
+    $("hintGuessInput").disabled = true;
+    $("hintGuessButton").disabled = true;
+    $("hintRoundStatus").textContent = won ? "Won" : "Finished";
+
+    $("revealHintButton").disabled = true;
+    $("hintResult").innerHTML = renderResultBanner(game, mode);
+
+    renderClues();
+  }
+
+  renderAllStats();
+  renderHome();
+
+  if (won) {
+    showToast("Great job! You identified the player.", "success");
+  }
 }
 
-async function shareResult() {
-  if (!wordFinished) {
-    showMessage("wordMessage", "Finish the puzzle before sharing your result.", "warn");
+function renderResultBanner(game, mode) {
+  const answer = game.answer;
+
+  const title = game.won ? "YOU GOT IT!" : "ROUND COMPLETE";
+  const subtitle = game.won
+    ? `Correctly identified ${answer.name} in ${game.attempts} ${plural(game.attempts, "guess")}.`
+    : `The mystery player was ${answer.name}. Keep learning the league and try another round.`;
+
+  const modeText = mode === "player"
+    ? "Player Guess"
+    : "Hint Challenge";
+
+  return `
+    <div class="result-banner ${game.won ? "" : "fail"}">
+      <div class="result-title">${game.won ? "✓ " : "🏀 "}${title}</div>
+      <div class="result-description">
+        <strong>${escapeHTML(answer.name)}</strong> ·
+        ${escapeHTML(answer.team)} ·
+        ${escapeHTML(answer.position)}<br>
+        ${escapeHTML(subtitle)}
+      </div>
+
+      <div class="result-actions">
+        <button class="btn btn-primary"
+                onclick="${mode === "player" ? "startPlayerGame()" : "startHintGame()"}">
+          PLAY AGAIN
+        </button>
+        <button class="btn btn-secondary"
+                onclick="showPage('stats')">VIEW STATS</button>
+      </div>
+    </div>
+  `;
+}
+
+/* =========================================================
+   17. HOME DASHBOARD AND HISTORY
+   ========================================================= */
+
+function getWinRate() {
+  if (!stats.games) return 0;
+
+  return Math.round((stats.wins / stats.games) * 100);
+}
+
+function renderHome() {
+  $("homeGames").textContent = stats.games;
+  $("homeWinRate").textContent = `${getWinRate()}%`;
+  $("homeStreak").textContent = stats.currentStreak;
+  $("homeBestStreak").textContent = stats.bestStreak;
+
+  renderHistory("homeHistory", 5);
+}
+
+function renderHistory(containerId, limit = 100) {
+  const container = $(containerId);
+  const entries = history.slice(0, limit);
+
+  if (!entries.length) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">📋</div>
+        <strong>No completed rounds yet.</strong>
+        Finish a game and your recent results will appear here.
+      </div>
+    `;
     return;
   }
 
-  try {
-    if (navigator.share) {
-      await navigator.share({ title: "BUZZER NBA Wordle", text: lastShareText });
-    } else if (navigator.clipboard && window.isSecureContext) {
-      await navigator.clipboard.writeText(lastShareText);
-      showMessage("wordMessage", "Result copied! Paste it wherever you want to share.", "good");
-    } else {
-      showMessage("wordMessage", lastShareText, "good");
-    }
-  } catch (error) {
-    if (error.name !== "AbortError") {
-      showMessage("wordMessage", lastShareText, "good");
-    }
-  }
+  container.innerHTML = entries.map(entry => `
+    <div class="history-item">
+      <div style="min-width:0">
+        <div class="history-name">${escapeHTML(entry.playerName)}</div>
+        <div class="history-meta">
+          ${entry.mode === "player" ? "Player Guess" : "Hint Challenge"}
+          · ${entry.guesses} ${plural(entry.guesses, "guess")}
+          · ${formatDate(entry.timestamp)}
+          ${entry.mode === "hints" && entry.cluesRevealed !== null
+            ? ` · ${entry.cluesRevealed} ${plural(entry.cluesRevealed, "clue")}`
+            : ""}
+        </div>
+      </div>
+
+      <span class="history-result ${entry.won ? "won" : "lost"}">
+        ${entry.won ? "WIN" : "LOSS"}
+      </span>
+    </div>
+  `).join("");
 }
+
+/* =========================================================
+   18. FULL STATISTICS
+   ========================================================= */
+
+function renderAllStats() {
+  if (!$("statsGames")) return;
+
+  $("statsGames").textContent = stats.games;
+  $("statsWins").textContent = stats.wins;
+  $("statsRate").textContent = `${getWinRate()}%`;
+  $("statsBest").textContent = stats.bestStreak;
+
+  $("statsPlayerWins").textContent = stats.playerWins;
+  $("statsPlayerGames").textContent =
+    `${stats.playerGames} ${plural(stats.playerGames, "round")} played`;
+
+  $("statsHintWins").textContent = stats.hintWins;
+  $("statsHintGames").textContent =
+    `${stats.hintGames} ${plural(stats.hintGames, "round")} played`;
+
+  const playerRate = stats.playerGames
+    ? Math.round(stats.playerWins / stats.playerGames * 100)
+    : 0;
+
+  const hintRate = stats.hintGames
+    ? Math.round(stats.hintWins / stats.hintGames * 100)
+    : 0;
+
+  $("statsPlayerBar").style.width = `${playerRate}%`;
+  $("statsHintBar").style.width = `${hintRate}%`;
+
+  const average = stats.games
+    ? stats.totalGuesses / stats.games
+    : 0;
+
+  $("statsAverage").textContent = average.toFixed(1);
+
+  // Visual reference scale only; average guesses can exceed this scale.
+  $("statsAverageBar").style.width =
+    `${clamp(average / 10 * 100, 0, 100)}%`;
+
+  $("settingsCompletedGames").textContent = stats.games;
+  $("settingsHistoryCount").textContent = history.length;
+
+  renderHistory("fullHistory");
+}
+
+/* =========================================================
+   19. SETTINGS
+   ========================================================= */
+
+function toggleSetting(key) {
+  if (!(key in DEFAULT_SETTINGS)) return;
+
+  settings[key] = !settings[key];
+
+  saveStoredObject(STORAGE_KEYS.settings, settings);
+  renderSettings();
+
+  showToast(
+    `${key === "confirmNewRound"
+      ? "New-round confirmation"
+      : key === "hintFeedback"
+        ? "Hint feedback"
+        : "Autocomplete"} ${settings[key] ? "enabled" : "disabled"}.`,
+    "success"
+  );
+}
+
+function renderSettings() {
+  const mapping = {
+    autocomplete: "toggleAutocomplete",
+    confirmNewRound: "toggleConfirm",
+    hintFeedback: "toggleFeedback"
+  };
+
+  for (const [key, id] of Object.entries(mapping)) {
+    const button = $(id);
+
+    button.classList.toggle("on", Boolean(settings[key]));
+    button.setAttribute("aria-pressed", String(Boolean(settings[key])));
+  }
+
+  $("settingsPlayerCount").textContent = rosterReady
+    ? players.length.toLocaleString()
+    : "—";
+
+  $("settingsTeamCount").textContent = teamsById.size || "—";
+
+  $("settingsDatabaseStatus").textContent = rosterReady
+    ? (rosterError ? "Cached roster" : "Ready")
+    : "Unavailable";
+
+  $("settingsCompletedGames").textContent = stats.games;
+  $("settingsHistoryCount").textContent = history.length;
+}
+
+function clearHistory() {
+  if (!history.length) {
+    showToast("There is no game history to clear.", "info");
+    return;
+  }
+
+  const confirmed = window.confirm(
+    "Clear your game history? Your overall statistics will remain."
+  );
+
+  if (!confirmed) return;
+
+  history = [];
+  saveStoredObject(STORAGE_KEYS.history, history);
+
+  renderHistory("fullHistory");
+  renderHistory("homeHistory", 5);
+  renderSettings();
+
+  showToast("Game history cleared.", "success");
+}
+
+function resetAllStats() {
+  const confirmed = window.confirm(
+    "Reset ALL BUZZER stats and game history on this device? This cannot be undone."
+  );
+
+  if (!confirmed) return;
+
+  stats = {
+    games: 0,
+    wins: 0,
+    losses: 0,
+    currentStreak: 0,
+    bestStreak: 0,
+    totalGuesses: 0,
+    playerGames: 0,
+    playerWins: 0,
+    hintGames: 0,
+    hintWins: 0
+  };
+
+  history = [];
+
+  saveAllStats();
+  renderAllStats();
+  renderHome();
+  renderSettings();
+
+  showToast("All game stats have been reset.", "success");
+}
+
+/* =========================================================
+   20. FORM EVENT HANDLERS
+   ========================================================= */
+
+$("playerGuessForm").addEventListener("submit", event => {
+  event.preventDefault();
+
+  submitPlayerGuess($("playerGuessInput").value);
+});
+
+$("hintGuessForm").addEventListener("submit", event => {
+  event.preventDefault();
+
+  submitHintGuess($("hintGuessInput").value);
+});
+
+attachAutocomplete("playerGuessInput", "playerSuggestions");
+attachAutocomplete("hintGuessInput", "hintSuggestions");
+
+/* =========================================================
+   21. KEYBOARD AND ACCESSIBILITY SUPPORT
+   ========================================================= */
 
 document.addEventListener("keydown", event => {
-  if ($("wordScreen").classList.contains("hidden")) return;
-  if (event.ctrlKey || event.metaKey || event.altKey) return;
-
-  if (event.key === "Enter") {
-    event.preventDefault();
-    submitWord();
-  } else if (event.key === "Backspace") {
-    event.preventDefault();
-    deleteLetter();
-  } else if (/^[a-zA-Z]$/.test(event.key)) {
-    addLetter(event.key.toUpperCase());
+  if (event.key === "Escape") {
+    closeSuggestions("playerSuggestions");
+    closeSuggestions("hintSuggestions");
   }
 });
 
-/* ---------------------------
-   STATS
----------------------------- */
+/* =========================================================
+   22. INITIALIZATION
+   ========================================================= */
 
-function updateStatsUI() {
-  const s = safeRead(STATS_KEY, {
-    playerPlayed: 0, playerWins: 0, playerStreak: 0,
-    wordPlayed: 0, wordWins: 0, wordStreak: 0
-  });
+function initializeApp() {
+  renderAllStats();
+  renderHome();
+  renderSettings();
 
-  const played = s.playerPlayed + s.wordPlayed;
-  const wins = s.playerWins + s.wordWins;
-  const streak = Math.max(s.playerStreak, s.wordStreak);
-
-  $("statPlayed").textContent = played;
-  $("statWins").textContent = wins;
-  $("statRate").textContent = played ? Math.round(wins / played * 100) + "%" : "0%";
-  $("statStreak").textContent = streak;
+  loadRoster(false);
 }
 
-/* ---------------------------
-   INITIALIZE
----------------------------- */
+initializeApp();
 
-$("playerForm").addEventListener("submit", submitPlayerGuess);
-
-loadRoster();
-updateStatsUI();
+/* =========================================================
+   END OF BUZZER APPLICATION
+   ========================================================= */
 </script>
+
 </body>
 </html>
