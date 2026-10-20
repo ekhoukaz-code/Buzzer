@@ -1,0 +1,378 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BUZZER | NBA Guessing Game</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: #101114;
+      color: #f5f5f5;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 24px 16px;
+    }
+
+    header { margin: 20px auto 30px; }
+
+    .logo {
+      color: #ff8c32;
+      font-size: 42px;
+      font-weight: 900;
+      letter-spacing: 5px;
+    }
+
+    .subtitle { color: #a5a5ad; }
+
+    main {
+      max-width: 650px;
+      margin: auto;
+      background: #1b1c21;
+      border: 1px solid #33343c;
+      border-radius: 16px;
+      padding: 22px;
+    }
+
+    h2 { margin-top: 0; }
+
+    input, button {
+      width: 100%;
+      padding: 14px;
+      border-radius: 9px;
+      font-size: 16px;
+    }
+
+    input {
+      background: #101114;
+      color: white;
+      border: 1px solid #484954;
+      margin: 12px 0;
+    }
+
+    button {
+      background: #ff8c32;
+      color: #17120e;
+      border: 0;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover { background: #ffab63; }
+
+    .secondary {
+      background: #30313a;
+      color: white;
+      margin-top: 10px;
+    }
+
+    #message {
+      min-height: 24px;
+      margin: 15px 0;
+      color: #ffb16e;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 20px 0;
+    }
+
+    .stat {
+      flex: 1;
+      background: #292a32;
+      border-radius: 10px;
+      padding: 12px 4px;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 23px;
+      color: #ff9b4a;
+    }
+
+    .hint {
+      background: #292a32;
+      border-radius: 10px;
+      padding: 14px;
+      margin: 8px 0;
+      text-align: left;
+      color: #e5e5e8;
+    }
+
+    .label {
+      color: #ff9b4a;
+      font-weight: bold;
+    }
+
+    footer {
+      color: #777983;
+      font-size: 12px;
+      margin-top: 24px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">🏀 BUZZER</div>
+    <p class="subtitle">ONE PLAYER. SIX GUESSES. CAN YOU GET IT?</p>
+  </header>
+
+  <main>
+    <h2>Who's the mystery player?</h2>
+    <p class="subtitle">Guess the player to reveal a clue.</p>
+
+    <div class="stats">
+      <div class="stat">
+        <strong id="attempts">0/6</strong>
+        Guesses
+      </div>
+      <div class="stat">
+        <strong id="clueCount">0</strong>
+        Clues
+      </div>
+    </div>
+
+    <form id="guessForm">
+      <input
+        id="guessInput"
+        list="playerOptions"
+        placeholder="Type an NBA player's name..."
+        autocomplete="off"
+        required
+      >
+      <datalist id="playerOptions"></datalist>
+      <button type="submit">LOCK IN GUESS 🔒</button>
+    </form>
+
+    <div id="message" role="status">Your first clue is ready. Good luck!</div>
+
+    <h3 style="text-align:left">MYSTERY CLUES</h3>
+    <div id="clues">
+      <div class="hint">🔒 Make your first guess to unlock a clue.</div>
+    </div>
+
+    <button class="secondary" id="restartButton">PLAY ANOTHER ROUND ↻</button>
+  </main>
+
+  <footer>
+    BUZZER is a fan-made guessing game, not affiliated with the NBA.
+    Sample player data is for gameplay practice.
+  </footer>
+
+  <script>
+    const players = [
+      {
+        name: "LeBron James",
+        team: "Lakers",
+        position: "Forward",
+        age: 41,
+        clues: [
+          "This superstar is nicknamed King James.",
+          "He has played for Cleveland, Miami, and Los Angeles.",
+          "His son is also an NBA player."
+        ]
+      },
+      {
+        name: "Stephen Curry",
+        team: "Warriors",
+        position: "Guard",
+        age: 38,
+        clues: [
+          "He is famous for his incredible three-point shooting.",
+          "His team plays in San Francisco.",
+          "His jersey number is 30."
+        ]
+      },
+      {
+        name: "Jayson Tatum",
+        team: "Celtics",
+        position: "Forward",
+        age: 28,
+        clues: [
+          "He plays for Boston.",
+          "He helped his team win the 2024 NBA championship.",
+          "His jersey number is 0."
+        ]
+      },
+      {
+        name: "Luka Doncic",
+        team: "Lakers",
+        position: "Guard",
+        age: 27,
+        clues: [
+          "He was born in Slovenia.",
+          "He previously starred for Dallas.",
+          "He is known for his passing and scoring."
+        ]
+      },
+      {
+        name: "Giannis Antetokounmpo",
+        team: "Bucks",
+        position: "Forward",
+        age: 31,
+        clues: [
+          "His nickname is the Greek Freak.",
+          "He was born in Greece.",
+          "He won an NBA title in 2021."
+        ]
+      },
+      {
+        name: "Kevin Durant",
+        team: "Rockets",
+        position: "Forward",
+        age: 37,
+        clues: [
+          "He is a tall, elite scoring forward.",
+          "He won Olympic gold medals with Team USA.",
+          "His initials are K.D."
+        ]
+      },
+      {
+        name: "Nikola Jokic",
+        team: "Nuggets",
+        position: "Center",
+        age: 31,
+        clues: [
+          "He is a Serbian basketball star.",
+          "He is famous for passing as well as scoring.",
+          "He plays for Denver."
+        ]
+      },
+      {
+        name: "Anthony Edwards",
+        team: "Timberwolves",
+        position: "Guard",
+        age: 25,
+        clues: [
+          "His nickname is Ant-Man.",
+          "He plays for Minnesota.",
+          "He is known for explosive dunks."
+        ]
+      },
+      {
+        name: "Shai Gilgeous-Alexander",
+        team: "Thunder",
+        position: "Guard",
+        age: 28,
+        clues: [
+          "His initials are S.G.A.",
+          "He plays for Oklahoma City.",
+          "He won the 2025 NBA MVP award."
+        ]
+      },
+      {
+        name: "Victor Wembanyama",
+        team: "Spurs",
+        position: "Center",
+        age: 22,
+        clues: [
+          "He is a French basketball star.",
+          "He is famous for his extraordinary height.",
+          "He plays for San Antonio."
+        ]
+      }
+    ];
+
+    const $ = id => document.getElementById(id);
+
+    let answer;
+    let guesses;
+    let roundOver;
+    let shownClues;
+
+    function startRound() {
+      answer = players[Math.floor(Math.random() * players.length)];
+      guesses = [];
+      roundOver = false;
+      shownClues = 0;
+
+      $("attempts").textContent = "0/6";
+      $("clueCount").textContent = "0";
+      $("message").textContent = "Your first clue is ready. Good luck!";
+      $("guessInput").disabled = false;
+      $("guessInput").value = "";
+      $("guessInput").focus();
+
+      $("clues").innerHTML =
+        '<div class="hint">🔒 Make your first guess to unlock a clue.</div>';
+    }
+
+    function revealClue() {
+      if (shownClues < answer.clues.length) {
+        const clue = document.createElement("div");
+        clue.className = "hint";
+        clue.innerHTML =
+          '<span class="label">CLUE ' + (shownClues + 1) +
+          ':</span> ' + answer.clues[shownClues];
+
+        $("clues").appendChild(clue);
+        shownClues++;
+        $("clueCount").textContent = shownClues;
+      }
+    }
+
+    function submitGuess(event) {
+      event.preventDefault();
+      if (roundOver) return;
+
+      const typed = $("guessInput").value.trim().toLowerCase();
+      const player = players.find(
+        p => p.name.toLowerCase() === typed
+      );
+
+      if (!player) {
+        $("message").textContent =
+          "Choose a player from the suggestion list!";
+        return;
+      }
+
+      if (guesses.includes(player.name)) {
+        $("message").textContent = "You've already guessed that player!";
+        return;
+      }
+
+      guesses.push(player.name);
+      $("attempts").textContent = guesses.length + "/6";
+
+      if (player.name === answer.name) {
+        $("message").textContent =
+          "🏆 BUZZER! You got it — " + answer.name + "!";
+        roundOver = true;
+        $("guessInput").disabled = true;
+        return;
+      }
+
+      revealClue();
+
+      if (guesses.length >= 6) {
+        $("message").textContent =
+          "Game over! The mystery player was " + answer.name + ".";
+        roundOver = true;
+        $("guessInput").disabled = true;
+      } else {
+        $("message").textContent =
+          "Not quite! Clue unlocked. Try again!";
+      }
+
+      $("guessInput").value = "";
+    }
+
+    function fillPlayerOptions() {
+      $("playerOptions").innerHTML = players.map(
+        p => '<option value="' + p.name + '"></option>'
+      ).join("");
+    }
+
+    $("guessForm").addEventListener("submit", submitGuess);
+    $("restartButton").addEventListener("click", startRound);
+
+    fillPlayerOptions();
+    startRound();
+  </script>
+</body>
+</html>
