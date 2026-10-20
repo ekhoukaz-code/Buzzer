@@ -1,0 +1,30 @@
+
+[
+  {
+    "name": "LeBron James",
+    "team": "Los Angeles Lakers",
+    "division": "Pacific",
+    "age": 41,
+    "number": 23,
+    "position": "F",
+    "height": "6-9"
+  },
+  {
+    "name": "Stephen Curry",
+    "team": "Golden State Warriors",
+    "division": "Pacific",
+    "age": 38,
+    "number": 30,
+    "position": "G",
+    "height": "6-2"
+  },
+  {
+    "name": "Jayson Tatum",
+    "team": "Boston Celtics",
+    "division": "Atlantic",
+    "age": 28,
+    "number": 0,
+    "position": "F",
+    "height": "6-8"
+  }
+]
